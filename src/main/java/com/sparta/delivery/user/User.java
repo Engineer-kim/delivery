@@ -1,6 +1,7 @@
 package com.sparta.delivery.user;
 
 import com.sparta.delivery.address.UserAddress;
+import com.sparta.delivery.order.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -41,7 +42,18 @@ public class User {
 
 
 
+    // 외래키
+
+    // User가 여러 개의 주소를 가질 수 있는 일대다 관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addressList = new ArrayList<>();
+
+    // User가 여러 개의 Order를 가질 수 있는 일대다 관계
+    @OneToMany(mappedBy = "user")
+    private List<Order> orderList = new ArrayList<>();
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "store_id")
+//    private Store store;
 
 }
