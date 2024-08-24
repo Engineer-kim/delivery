@@ -1,5 +1,6 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -25,4 +26,10 @@ public class Order {
 
     @Column(name = "request", length = 100)
     private String request;
+
+
+    // 외래키
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

@@ -30,6 +30,9 @@ public class UserAddress {
     @Column(name = "address_line2", length = 255)
     private String line2;
 
+
+
+    // 외래키
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
