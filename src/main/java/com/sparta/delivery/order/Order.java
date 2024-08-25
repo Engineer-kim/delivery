@@ -2,10 +2,18 @@ package com.sparta.delivery.order;
 
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "p_orders")
 public class Order {
     @Id

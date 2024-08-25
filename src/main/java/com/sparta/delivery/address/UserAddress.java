@@ -5,14 +5,16 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "p_address")
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "p_addresses")
 public class UserAddress {
     @Id
     @GeneratedValue
@@ -24,7 +26,7 @@ public class UserAddress {
     private String addressName;
 
     // 기본 주소
-    @Column(name = "address_line1", length = 255, nullable = false)
+    @Column(name = "address_line1", nullable = false)
     private String line1;
 
     // 상세 주소 (아파트 동, 호수 등)
