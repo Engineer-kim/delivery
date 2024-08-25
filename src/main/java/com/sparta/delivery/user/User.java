@@ -5,6 +5,7 @@ import com.sparta.delivery.order.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "p_users")
 public class User {
     @Id
@@ -52,8 +54,17 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orderList = new ArrayList<>();
 
+    public User(String username, String password, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "store_id")
 //    private Store store;
+
+
+    // 생성자
 
 }
