@@ -37,7 +37,7 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // 토큰 생성
+    // JWT 토큰 생성
     public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
@@ -53,7 +53,10 @@ public class JwtUtil {
 
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
+        // Authorization 헤더 가져오기
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+        // 'Bearer ' 자르기
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
