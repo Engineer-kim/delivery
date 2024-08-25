@@ -19,6 +19,7 @@ public class UserAddress {
     @Column(name = "id")
     private UUID id;
 
+    // 배송지 이름 (집, 회사 등등..)
     @Column(name = "address_name", length = 100, nullable = false)
     private String addressName;
 
@@ -33,6 +34,7 @@ public class UserAddress {
 
 
     // 외래키
+    // User 가 여러개의 배송지를 가질 수 있는 일대다 관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

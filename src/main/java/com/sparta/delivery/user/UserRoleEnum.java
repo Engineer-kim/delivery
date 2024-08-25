@@ -17,10 +17,11 @@ public enum UserRoleEnum {
         this.authority = authority;
     }
 
+    // 스프링 시큐리티로 구현할 것이라 "ROLE_" prefix 붙임
     public static class Authority {
-        public static final String CUSTOMER = "ROLE_CUSTOMER"; // ROLE_ 형태여야
+        public static final String CUSTOMER = "ROLE_CUSTOMER";
         public static final String OWNER = "ROLE_OWNER";
-        public static final String MANAGER = "ROLE_MANAGER"; // ROLE_ 형태여야
+        public static final String MANAGER = "ROLE_MANAGER";
         public static final String MASTER = "ROLE_MASTER";
     }
 }
