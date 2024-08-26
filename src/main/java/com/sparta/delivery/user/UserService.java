@@ -1,11 +1,14 @@
 package com.sparta.delivery.user;
 
+import com.sparta.delivery.address.UserAddressRepository;
 import com.sparta.delivery.user.dto.SignupRequestDto;
 import com.sparta.delivery.user.dto.UserInfoDto;
+import com.sparta.delivery.user.dto.UserRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +19,8 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserAddressRepository userAddressRepository;
     private final PasswordEncoder passwordEncoder;
-
-
-    // 아이디로 유저 조회
-    public User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found ID : " + userId));
-    }
 
 
     // 회원 가입
@@ -53,6 +50,47 @@ public class UserService {
         return convertToUserInfoDto(user);
     }
 
+
+    // 회원 탈퇴 메서드
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 주소의 삭제 여부 설정
+        user.getAddressList().forEach(address -> address.setDeleted(true));
+        userAddressRepository.saveAll(user.getAddressList());
+
+        // 사용자 비활성화
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
+
+    // 회원 정보 수정 메서드
+    @Transactional
+    public UserInfoDto updateUser(Long userId, UserRequestDto updateRequestDto) {
+        User user = findUserById(userId);
+
+        // 수정할 필드가 있는 경우에만 업데이트합니다.
+        if (updateRequestDto.getUsername() != null && !updateRequestDto.getUsername().isEmpty()) {
+            user.setUsername(updateRequestDto.getUsername());
+        }
+
+        if (updateRequestDto.getPassword() != null && !updateRequestDto.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(updateRequestDto.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
+        // 추가 필드 업데이트도 필요시 추가할 수 있습니다.
+
+        User upadtedUser = userRepository.save(user);
+
+        return convertToUserInfoDto(upadtedUser);
+    }
+
+
+
+    // MASTER
+
     // 전체 사용자 조회
     public List<UserInfoDto> getAllUserInfos() {
         List<User> userList = userRepository.findAll();
@@ -62,11 +100,46 @@ public class UserService {
     }
 
 
+    // 관리자가 사용자 비활성화 메서드
+    public void deactivateUser(Long adminId, Long userId) {
+        // 관리자 권한 확인 로직 추가
+        if (!isAdmin(adminId)) {
+            throw new AccessDeniedException("Only admins can deactivate users");
+        }
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 주소의 삭제 여부 설정
+        user.getAddressList().forEach(address -> address.setDeleted(true));
+        userAddressRepository.saveAll(user.getAddressList());
+
+        // 사용자 비활성화
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
+
+
+
+
+
+    // 공용 메서드
+
+    // 아이디로 유저 조회
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found ID : " + userId));
+    }
 
     // 엔티티 -> dto 변환
     public UserInfoDto convertToUserInfoDto(User user) {
         return new UserInfoDto(user.getUsername(), user.getRole());
+    }
+
+    // 관리자 여부 확인
+    private boolean isAdmin(Long adminId) {
+        User admin = userRepository.findById(adminId).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        return admin.getRole() == UserRoleEnum.MASTER; // 예시로 MASTER 권한 체크
     }
 
 }
