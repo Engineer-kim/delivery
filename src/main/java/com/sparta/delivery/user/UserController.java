@@ -5,6 +5,7 @@ import com.sparta.delivery.user.dto.SignupRequestDto;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import com.sparta.delivery.user.dto.UserRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -64,6 +65,20 @@ public class UserController {
         List<UserInfoDto> userInfoDtoList = userService.getAllUserInfos();
         return new ResponseEntity<>(userInfoDtoList, HttpStatus.OK);
     }
+
+    // 회원 이름으로 검색
+    @GetMapping("/users/search")
+    public ResponseEntity<Page<UserInfoDto>> searchUsers(
+            @RequestParam String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdDate") String sortBy
+    ) {
+        Page<UserInfoDto> usersPage = userService.searchUsers(username, page, size, sortBy);
+        return ResponseEntity.ok(usersPage);
+    }
+
+
 
     // 관리자가 회원 탈퇴
     @DeleteMapping("/users/{userId}")

@@ -1,6 +1,7 @@
 package com.sparta.delivery.user;
 
 import com.sparta.delivery.address.UserAddress;
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.order.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -19,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "p_users")
-public class User {
+public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

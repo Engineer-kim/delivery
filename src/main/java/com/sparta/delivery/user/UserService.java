@@ -5,11 +5,18 @@ import com.sparta.delivery.user.dto.SignupRequestDto;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import com.sparta.delivery.user.dto.UserRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +67,10 @@ public class UserService {
         user.getAddressList().forEach(address -> address.setDeleted(true));
         userAddressRepository.saveAll(user.getAddressList());
 
+        // 삭제 필드 설정
+        user.setDeletedAt(LocalDateTime.now());
+        user.setDeletedBy(getCurrentUser());
+
         // 사용자 비활성화
         user.setDeleted(true);
         userRepository.save(user);
@@ -99,6 +110,19 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    // 유저 이름으로 검색하고 정렬 및 페이징 처리
+    public Page<UserInfoDto> searchUsers(String username, int page, int size, String sortBy) {
+        // 기본 정렬은 생성일 순으로 하고, 수정일 순으로 변경 가능
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy.equals("modifiedDate") ? "modifiedDate" : "createdDate");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 검색과 페이징 처리된 결과
+        Page<User> usersPage = userRepository.findByUsernameContainingIgnoreCase(username, pageable);
+
+        // DTO 변환 및 반환
+        return usersPage.map(this::convertToUserInfoDto);
+    }
+
 
     // 관리자가 사용자 비활성화 메서드
     public void deactivateUser(Long adminId, Long userId) {
@@ -113,6 +137,10 @@ public class UserService {
         // 주소의 삭제 여부 설정
         user.getAddressList().forEach(address -> address.setDeleted(true));
         userAddressRepository.saveAll(user.getAddressList());
+
+        // 삭제 필드 설정
+        user.setDeletedAt(LocalDateTime.now());
+        user.setDeletedBy(getCurrentUser());
 
         // 사용자 비활성화
         user.setDeleted(true);
@@ -142,4 +170,12 @@ public class UserService {
         return admin.getRole() == UserRoleEnum.MASTER; // 예시로 MASTER 권한 체크
     }
 
+
+    private String getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "unknown";
+        }
+        return authentication.getName();
+    }
 }
