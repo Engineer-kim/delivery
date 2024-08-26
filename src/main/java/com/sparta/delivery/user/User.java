@@ -57,17 +57,16 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orderList = new ArrayList<>();
 
-    public User(String username, String password, UserRoleEnum role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
-
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "store_id")
 //    private Store store;
 
 
     // 생성자
+    public User(String username, String password, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
 }

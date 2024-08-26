@@ -19,6 +19,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
 
+    // 아이디로 유저 조회
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found ID : " + userId));
+    }
+
+
     // 회원 가입
     public void signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -42,8 +49,7 @@ public class UserService {
 
     // 사용자 정보 조회
     public UserInfoDto getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
+        User user = findUserById(userId);
         return convertToUserInfoDto(user);
     }
 

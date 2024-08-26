@@ -2,10 +2,7 @@ package com.sparta.delivery.address;
 
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -14,6 +11,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "p_addresses")
 public class UserAddress {
     @Id
@@ -44,4 +42,8 @@ public class UserAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+
+    // 생성자
 }
