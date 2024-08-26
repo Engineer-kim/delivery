@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface UserAddressRepository extends JpaRepository<UserAddress, UUID> {
     List<UserAddress> findByUserId(Long userId);
+
+    List<UserAddress> findByUserIdAndIsDeletedFalse(Long userId);
 }
