@@ -42,6 +42,9 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+    // 삭제 여부
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 
 
     // 외래키

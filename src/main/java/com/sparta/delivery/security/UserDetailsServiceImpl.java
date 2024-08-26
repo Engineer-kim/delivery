@@ -22,6 +22,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Not Found " + username));
 
+        // 삭제된 유저 로그인 불가 처리
+        if (user.isDeleted()) {
+            throw new RuntimeException("User is deleted and cannot log in");
+        }
+
         return new UserDetailsImpl(user);
     }
 }

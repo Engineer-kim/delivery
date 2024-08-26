@@ -38,6 +38,9 @@ public class Order {
     @Column(name = "request", length = 100)
     private String request;
 
+    // 삭제 여부
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 
 
     // 외래키

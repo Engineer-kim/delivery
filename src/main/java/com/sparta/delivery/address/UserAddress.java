@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "p_addresses")
 public class UserAddress {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
 
@@ -30,8 +30,12 @@ public class UserAddress {
     private String line1;
 
     // 상세 주소 (아파트 동, 호수 등)
-    @Column(name = "address_line2", length = 255)
+    @Column(name = "address_line2")
     private String line2;
+
+    // 삭제 여부
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 
 
 
