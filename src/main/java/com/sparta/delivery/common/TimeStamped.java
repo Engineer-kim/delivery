@@ -20,7 +20,7 @@ public abstract class TimeStamped {
     // 모든 테이블에 created_at, created_by, updated_at, updated_by, deleted_at, deleted_by 필드를 추가하여 데이터 감사 로그 기록
     @CreatedDate
     @Column
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @CreatedBy
     @Column

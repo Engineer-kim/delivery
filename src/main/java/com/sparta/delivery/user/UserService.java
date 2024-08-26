@@ -110,10 +110,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+
     // 유저 이름으로 검색하고 정렬 및 페이징 처리
     public Page<UserInfoDto> searchUsers(String username, int page, int size, String sortBy) {
         // 기본 정렬은 생성일 순으로 하고, 수정일 순으로 변경 가능
-        Sort sort = Sort.by(Sort.Direction.DESC, sortBy.equals("modifiedDate") ? "modifiedDate" : "createdDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
 
         // 검색과 페이징 처리된 결과
@@ -131,9 +132,7 @@ public class UserService {
             throw new AccessDeniedException("Only admins can deactivate users");
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+        User user = findUserById(userId);
         // 주소의 삭제 여부 설정
         user.getAddressList().forEach(address -> address.setDeleted(true));
         userAddressRepository.saveAll(user.getAddressList());
@@ -171,7 +170,7 @@ public class UserService {
     }
 
 
-    private String getCurrentUser() {
+    public String getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return "unknown";

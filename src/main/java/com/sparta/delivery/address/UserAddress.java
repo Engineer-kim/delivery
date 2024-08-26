@@ -1,5 +1,6 @@
 package com.sparta.delivery.address;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Table(name = "p_addresses")
-public class UserAddress {
+public class UserAddress extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

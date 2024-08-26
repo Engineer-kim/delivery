@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -63,6 +64,9 @@ public class UserAddressService {
             throw new SecurityException("Unauthorized access to address");
         }
 
+        // 삭제 필드 설정
+        userAddress.setDeletedAt(LocalDateTime.now());
+        userAddress.setDeletedBy(userService.getCurrentUser());
         userAddress.setDeleted(true);
         userAddressRepository.save(userAddress);
     }

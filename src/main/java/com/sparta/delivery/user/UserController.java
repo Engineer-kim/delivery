@@ -72,7 +72,7 @@ public class UserController {
             @RequestParam String username,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdDate") String sortBy
+            @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Page<UserInfoDto> usersPage = userService.searchUsers(username, page, size, sortBy);
         return ResponseEntity.ok(usersPage);
