@@ -21,10 +21,10 @@ public class CartController {
 
     // 장바구니 생성
     @PostMapping
-    public void addCartItem(
+    public UUID addCartItem(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CartItemDto cartItemDto) {
-        UUID cartId = cartService.addCartItem(userDetails.getUser(), cartItemDto);
+        return cartService.addCartItem(userDetails.getUser(), cartItemDto);
     }
 
     // 장바구니 조회

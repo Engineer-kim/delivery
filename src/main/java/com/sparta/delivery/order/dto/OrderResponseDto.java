@@ -16,8 +16,7 @@ public class OrderResponseDto {
     private Long userId;
     private OrderTypeEnum typeEnum;
     private OrderStatusEnum statusEnum;
-    private List<OrderItem> orderItems;
-    private int quantity;
+    private List<OrderItemDto> orderItems;
     private String request;
     private Integer totalAmount;
 }

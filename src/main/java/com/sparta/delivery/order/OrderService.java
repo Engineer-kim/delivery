@@ -4,6 +4,7 @@ import com.sparta.delivery.cart.Cart;
 import com.sparta.delivery.cart.CartItem;
 import com.sparta.delivery.cart.CartItemRepository;
 import com.sparta.delivery.cart.CartRepository;
+import com.sparta.delivery.order.dto.OrderItemDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.order.dto.OrderResponseDto;
 import com.sparta.delivery.order.orderitem.OrderItemRepository;
@@ -87,6 +88,14 @@ public class OrderService {
 
 
 
+    @Transactional(readOnly = true)
+    public OrderResponseDto getOrderDetails(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        return toOrderResponseDto(order);
+    }
+
 
 
     private OrderItem createOrderItem(Order order, CartItem cartItem) {
@@ -108,7 +117,15 @@ public class OrderService {
         dto.setStatusEnum(order.getStatus());
         dto.setRequest(order.getRequest());
         dto.setTotalAmount(order.getTotalAmount());
-        dto.setOrderItems(order.getOrderItems());
+        List<OrderItemDto> orderItemDtos = order.getOrderItems().stream()
+                .map(item -> new OrderItemDto(
+                        item.getProductId(),
+                        item.getProductName(),
+                        item.getQuantity(),
+                        item.getPrice()))
+                .collect(Collectors.toList());
+
+        dto.setOrderItems(orderItemDtos);
         return dto;
     }
 

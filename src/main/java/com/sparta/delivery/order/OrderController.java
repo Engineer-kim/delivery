@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -19,14 +16,23 @@ import java.util.UUID;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @PostMapping
-    public OrderResponseDto createOrder(
+    public ResponseEntity<OrderResponseDto> createOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody OrderRequestDto requestDto
     ) {
         UUID orderId = orderService.createOrder(userDetails.getUser(),requestDto);
         OrderResponseDto responseDto = orderService.addOrderItems(orderId);
-        return responseDto;
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+
+    // 주문 단건 조회
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable UUID orderId) {
+        OrderResponseDto responseDto = orderService.getOrderDetails(orderId);
+        return ResponseEntity.ok(responseDto);
     }
 }
