@@ -81,9 +81,13 @@ public class ShopService {
                 .shopOpenTime(updateRequest.getShopOpenTime() != null ? updateRequest.getShopOpenTime() : store.getShopOpenTime())
                 .shopCloseTime(updateRequest.getShopCloseTime() != null ? updateRequest.getShopCloseTime() : store.getShopCloseTime())
                 .shopPhone(updateRequest.getShopPhone() != null ? updateRequest.getShopPhone() : store.getShopPhone())
-                .user(store.getUser())
+                .userId(userId)
                 .products(store.getProducts())
                 .build();
+
+        System.out.println(" updateResult.getShopOpenTime()::::::::::::::;" +  updateResult.getShopOpenTime());
+        System.out.println(" updateResult. store.getShopOpenTime()()::2wqeqweqeq2e::::::::::::;" +   store.getShopOpenTime());
+        System.out.println(" updateResult.getClosedTime()::::::::::::::::::;" +  updateResult.getShopCloseTime());
 
         Store updatedStore = storeRepository.save(updateResult);
 
@@ -92,24 +96,25 @@ public class ShopService {
     }
     /**가게 정보 삭제*/
     @Transactional
-    public void deleteShop(UUID id, Long userId) {
+    public void deleteShop(Long id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store store = storeRepository.findByShopId(id)
+        Store findResult = storeRepository.findByIdAndDeleteStatus(id, ShopDataStatus.U)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
         Store deleteResult = Store.builder()
-                .shopId(id)
+                .shopId(findResult.getShopId())
                 .deleteStatus(ShopDataStatus.D)
                 .build();
         storeRepository.save(deleteResult);
     }
 
     /**가게 비공개 처리*/
-    public void makePrivateShop(UUID id, Long userId) {
+    @Transactional
+    public void makePrivateShop(Long id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store store = storeRepository.findByShopId(id)
+        Store findResult = storeRepository.findByIdAndPrivacyStatus(id, ShopPrivacyStatus.P)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
         Store makePrivateResult = Store.builder()
-                .shopId(id)
+                .shopId(findResult.getShopId())
                 .privacyStatus(ShopPrivacyStatus.R)
                 .build();
         storeRepository.save(makePrivateResult);

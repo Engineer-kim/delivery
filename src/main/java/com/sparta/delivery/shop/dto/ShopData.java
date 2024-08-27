@@ -12,7 +12,7 @@ import java.util.UUID;
 @ToString
 @Builder
 public class ShopData {
-    private UUID shopId;
+    private Long shopId;
     private String shopName;
     private String shopAddress;
     private String shopType;

@@ -12,6 +12,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus.P;
+
 @Entity
 @Table(name = "p_store")
 @Getter
@@ -19,12 +21,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Setter
 public class Store extends TimeStamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shop_seq")
+    @SequenceGenerator(name = "shop_seq", sequenceName = "shop_sequence", allocationSize = 1)
     /**샵 아이디 식별자*/
-    private UUID shopId;
+    private Long shopId;
 
     @Column(nullable = false, length = 30)
     /**가게 이름*/
@@ -52,22 +56,22 @@ public class Store extends TimeStamped {
 
     /**삭제 여부 판단*/
     @Enumerated(EnumType.STRING)
-    @Column(name = "db_sts",nullable = false, columnDefinition = "varchar(1) default 'U'")
-    private ShopDataStatus deleteStatus = ShopDataStatus.U;
+    @Column(name = "db_sts",nullable = false , columnDefinition = "VARCHAR(1)")
+    private ShopDataStatus deleteStatus;
 
     /**공개 여부*/
     @Enumerated(EnumType.STRING)
-    @Column(name = "public_sts",nullable = false, columnDefinition = "varchar(1) default 'U'")
-    private ShopPrivacyStatus privacyStatus = ShopPrivacyStatus.P;
+    @Column(name = "public_sts", nullable = false, columnDefinition = "VARCHAR(1)")
+    private ShopPrivacyStatus privacyStatus;
     
     /**프로덕트와 연관관계*/
     @OneToMany(mappedBy = "store")
     private List<Product> products;
     /**유저 아이디*/
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "user_id", insertable = false, updatable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 }
