@@ -7,15 +7,21 @@ import com.sparta.delivery.shop.dto.ShopResponse;
 import com.sparta.delivery.shop.entity.Store;
 import com.sparta.delivery.shop.exception.StoreException;
 import com.sparta.delivery.shop.repo.ShopRepository;
+import com.sparta.delivery.shop.statusEnum.ShopDataStatus;
+import com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRepository;
 import com.sparta.delivery.user.UserRoleEnum;
 import com.sparta.delivery.user.dto.UserInfoDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +33,7 @@ public class ShopService {
     @Transactional
     public ShopResponse addStore(ShopRequest shopRequest , Long userId, List<Product> products) {
         try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-
-            if (!isUserAuthorized(user.getRole())) {
-                throw new RuntimeException("권한이 없습니다.");
-            }
+            User user = getUserAndCheckAuthorization(userId);
 
             Store store = convertToEntity(shopRequest, userId, products);
             System.out.println("UserId:::::::::" + userId);
@@ -50,14 +51,69 @@ public class ShopService {
             throw new StoreException("가게 정보 추가 중 오류 발생", e);
         }
     }
-    /**가게 정보 조회*/
-    /**가게 정보 상세 조회*/
+    /**가게 정보 조회(다건)*/
+    public List<ShopData> getAllShops(Long userId) {
+        User user = getUserAndCheckAuthorization(userId);
+        List<Store> stores = storeRepository.findAll();
+        return stores.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+    /**가게 정보 상세 조회(단건)*/
+    public ShopData getOneShop(Long userId, Long id) {
+        User user = getUserAndCheckAuthorization(userId);
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+        return convertToDto(store);
+    }
     /**가게 정보 가게 정보 수정*/
+    public ShopData updateShopInfo(Long userId, Long id  , ShopRequest updateRequest) {
+        User user = getUserAndCheckAuthorization(userId);
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
+
+        //유저와 상품, 가게 식별 번호 제외 수정 가능하도록 + 널 인지 체크
+        Store updateResult = Store.builder()
+                .shopId(store.getShopId())
+                .shopName(updateRequest.getShopName() != null ? updateRequest.getShopName() : store.getShopName())
+                .shopAddress(updateRequest.getShopAddress() != null ? updateRequest.getShopAddress() : store.getShopAddress())
+                .shopType(updateRequest.getShopType() != null ? updateRequest.getShopType() : store.getShopType())
+                .shopOpenTime(updateRequest.getShopOpenTime() != null ? updateRequest.getShopOpenTime() : store.getShopOpenTime())
+                .shopCloseTime(updateRequest.getShopCloseTime() != null ? updateRequest.getShopCloseTime() : store.getShopCloseTime())
+                .shopPhone(updateRequest.getShopPhone() != null ? updateRequest.getShopPhone() : store.getShopPhone())
+                .user(store.getUser())
+                .products(store.getProducts())
+                .build();
+
+        Store updatedStore = storeRepository.save(updateResult);
+
+        // DTO로 변환하여 반환
+        return convertToDto(updatedStore);
+    }
     /**가게 정보 삭제*/
+    @Transactional
+    public void deleteShop(UUID id, Long userId) {
+        User user = getUserAndCheckAuthorization(userId);
+        Store store = storeRepository.findByShopId(id)
+                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
+        Store deleteResult = Store.builder()
+                .shopId(id)
+                .deleteStatus(ShopDataStatus.D)
+                .build();
+        storeRepository.save(deleteResult);
+    }
+
     /**가게 비공개 처리*/
-
-
-
+    public void makePrivateShop(UUID id, Long userId) {
+        User user = getUserAndCheckAuthorization(userId);
+        Store store = storeRepository.findByShopId(id)
+                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
+        Store makePrivateResult = Store.builder()
+                .shopId(id)
+                .privacyStatus(ShopPrivacyStatus.R)
+                .build();
+        storeRepository.save(makePrivateResult);
+    }
 
     //  Entity ->  DTO
     private ShopData convertToDto(Store savedStore) {
@@ -76,7 +132,6 @@ public class ShopService {
         }catch (Exception e) {
             throw new RuntimeException("가게 쪽 Entity 에서 DTO 변환 중 오류: " + e.getMessage(), e);
         }
-
     }
     // Dto -> Entity
     private Store convertToEntity(ShopRequest shopRequest, Long userId, List<Product> products) {
@@ -102,7 +157,15 @@ public class ShopService {
         return role == UserRoleEnum.MANAGER || role == UserRoleEnum.MASTER;
     }
 
-    public List<ShopData> getAllShops() {
-        return null;
+    private User getUserAndCheckAuthorization(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        if (!isUserAuthorized(user.getRole())) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+
+        return user;
     }
+
 }

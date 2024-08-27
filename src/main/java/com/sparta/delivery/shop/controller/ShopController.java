@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,10 +49,11 @@ public class ShopController {
         ));
     }
     /**가게 정보 전체 조회*/
-    @GetMapping
-    public ResponseEntity<ApiResponse> getAllShops() {
+    @GetMapping("/shops")
+    public ResponseEntity<ApiResponse> getAllShops(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
-            List<ShopData> shopDataList = storeService.getAllShops();
+            Long userId = userDetails.getUser().getId();
+            List<ShopData> shopDataList = storeService.getAllShops(userId);
             ApiResponse response = new ApiResponse(
                     200,
                     "success",
@@ -64,7 +66,7 @@ public class ShopController {
             ApiResponse errorResponse = new ApiResponse(
                     500,
                     "fail",
-                    "가게 조회 도중 오류가 발생했습니다",
+                    "가게 전체 조회 도중 오류가 발생했습니다",
                     null
             );
 
@@ -72,4 +74,107 @@ public class ShopController {
         }
     }
 
+    /**가게 정보 상세 조회*/
+    @GetMapping("/shops/{id}")
+    public ResponseEntity<ApiResponse> getOneShop(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable Long id) {
+        try {
+            Long userId = userDetails.getUser().getId();
+            ShopData findOne = storeService.getOneShop(userId , id);
+            ApiResponse response = new ApiResponse(
+                    200,
+                    "success",
+                    null,
+                    findOne
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse errorResponse = new ApiResponse(
+                    500,
+                    "fail",
+                    "가게 단건 조회 도중 오류가 발생했습니다",
+                    null
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**가게 정보 가게 정보 수정*/
+    @PutMapping("/shops/{id}")
+    public ResponseEntity<ApiResponse> updateShopInfo(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable Long id,
+                                                      @RequestBody ShopRequest updateRequest) {
+        try {
+            Long userId = userDetails.getUser().getId();
+            ShopData updatedShopInfo = storeService.updateShopInfo(userId , id, updateRequest);
+            ApiResponse response = new ApiResponse(
+                    200,
+                    "success",
+                    null,
+                    updatedShopInfo
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse errorResponse = new ApiResponse(
+                    500,
+                    "fail",
+                    "가게 단건 조회 도중 오류가 발생했습니다",
+                    null
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**가게 정보 삭제*/
+    @DeleteMapping("/shops/{id}")
+    public ResponseEntity<ApiResponse> deleteShop(@PathVariable UUID id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            Long userId = userDetails.getUser().getId();
+            storeService.deleteShop(id ,userId );
+            ApiResponse response = new ApiResponse(
+                    200,
+                    "success",
+                    null,
+                    null
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse errorResponse = new ApiResponse(
+                    500,
+                    "fail",
+                    "가게 단건 조회 도중 오류가 발생했습니다",
+                    null
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+    /**가게 정보 삭제*/
+    @DeleteMapping("/shops/{id}/privacy")
+    public ResponseEntity<ApiResponse> makePrivateShop(@PathVariable UUID id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            Long userId = userDetails.getUser().getId();
+            storeService.makePrivateShop(id ,userId );
+            ApiResponse response = new ApiResponse(
+                    200,
+                    "success",
+                    null,
+                    null
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse errorResponse = new ApiResponse(
+                    500,
+                    "fail",
+                    "가게 단건 조회 도중 오류가 발생했습니다",
+                    null
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 }

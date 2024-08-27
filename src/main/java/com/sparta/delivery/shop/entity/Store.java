@@ -2,6 +2,8 @@ package com.sparta.delivery.shop.entity;
 
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.product.Product;
+import com.sparta.delivery.shop.statusEnum.ShopDataStatus;
+import com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +49,17 @@ public class Store extends TimeStamped {
     @Column(nullable = false, length = 15)
     /**가게 연락처*/
     private String shopPhone;
+
+    /**삭제 여부 판단*/
+    @Enumerated(EnumType.STRING)
+    @Column(name = "db_sts",nullable = false, columnDefinition = "varchar(1) default 'U'")
+    private ShopDataStatus deleteStatus = ShopDataStatus.U;
+
+    /**공개 여부*/
+    @Enumerated(EnumType.STRING)
+    @Column(name = "public_sts",nullable = false, columnDefinition = "varchar(1) default 'U'")
+    private ShopPrivacyStatus privacyStatus = ShopPrivacyStatus.P;
+    
     /**프로덕트와 연관관계*/
     @OneToMany(mappedBy = "store")
     private List<Product> products;
@@ -57,5 +70,4 @@ public class Store extends TimeStamped {
 
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
-
 }

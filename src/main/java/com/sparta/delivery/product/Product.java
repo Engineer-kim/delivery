@@ -55,8 +55,5 @@ public class Product {
         this.description = description;
         this.price = price;
     }
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
 }
 
