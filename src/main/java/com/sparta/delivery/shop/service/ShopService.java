@@ -100,11 +100,8 @@ public class ShopService {
         User user = getUserAndCheckAuthorization(userId);
         Store findResult = storeRepository.findByIdAndDeleteStatus(id, ShopDataStatus.U)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        Store deleteResult = Store.builder()
-                .shopId(findResult.getShopId())
-                .deleteStatus(ShopDataStatus.D)
-                .build();
-        storeRepository.save(deleteResult);
+        findResult.setDeleteStatus(ShopDataStatus.D);
+        storeRepository.save(findResult);
     }
 
     /**가게 비공개 처리*/
@@ -113,11 +110,8 @@ public class ShopService {
         User user = getUserAndCheckAuthorization(userId);
         Store findResult = storeRepository.findByIdAndPrivacyStatus(id, ShopPrivacyStatus.P)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        Store makePrivateResult = Store.builder()
-                .shopId(findResult.getShopId())
-                .privacyStatus(ShopPrivacyStatus.R)
-                .build();
-        storeRepository.save(makePrivateResult);
+        findResult.setPrivacyStatus(ShopPrivacyStatus.R);
+        storeRepository.save(findResult);
     }
 
     //  Entity ->  DTO

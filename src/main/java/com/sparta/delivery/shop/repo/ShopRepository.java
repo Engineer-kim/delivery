@@ -14,9 +14,9 @@ import java.util.UUID;
 @Repository
 public interface ShopRepository extends JpaRepository<Store , Long>{
 
-    @Query("SELECT s FROM Store s WHERE s.shopId  = :shopId  AND s.deleteStatus = :deleteStatus")
-    Optional<Store> findByIdAndDeleteStatus(@Param("shopId ") Long shopId , @Param("deleteStatus") ShopDataStatus deleteStatus);
+    @Query("SELECT s FROM Store s WHERE s.shopId = :shopId  AND s.deleteStatus = :deleteStatus")
+    Optional<Store> findByIdAndDeleteStatus(@Param("shopId") Long shopId , @Param("deleteStatus") ShopDataStatus deleteStatus);
 
-    @Query("SELECT s FROM Store s WHERE s.shopId  = :shopId  AND s.privacyStatus = :privacyStatus")
-    Optional<Store> findByIdAndPrivacyStatus(@Param("shopId ") Long shopId , @Param("privacyStatus") ShopPrivacyStatus shopPrivacyStatus);
+    @Query("SELECT s FROM Store s WHERE s.shopId = :shopId  AND s.privacyStatus = :privacyStatus")
+    Optional<Store> findByIdAndPrivacyStatus(@Param("shopId") Long shopId , @Param("privacyStatus") ShopPrivacyStatus shopPrivacyStatus);
 }

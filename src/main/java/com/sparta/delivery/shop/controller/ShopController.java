@@ -118,7 +118,7 @@ public class ShopController {
             ApiResponse errorResponse = new ApiResponse(
                     500,
                     "fail",
-                    "가게 단건 조회 도중 오류가 발생했습니다",
+                    "가게 단건 조회 도중 오류가 발생했습니다"  + e.getMessage(),
                     null
             );
 
@@ -144,7 +144,7 @@ public class ShopController {
             ApiResponse errorResponse = new ApiResponse(
                     500,
                     "fail",
-                    "가게 삭제 처리 도중 오류가 발생했습니다",
+                    "가게 삭제 처리 도중 오류가 발생했습니다"  + e.getMessage(),
                     null
             );
 
@@ -156,7 +156,7 @@ public class ShopController {
     public ResponseEntity<ApiResponse> makePrivateShop(@PathVariable Long id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             Long userId = userDetails.getUser().getId();
-            storeService.makePrivateShop(id ,userId );
+            storeService.makePrivateShop(id ,userId);
             ApiResponse response = new ApiResponse(
                     200,
                     "success",
