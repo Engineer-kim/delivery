@@ -1,6 +1,7 @@
 package com.sparta.delivery.cart;
 
 import com.sparta.delivery.cart.dto.CartItemDto;
+import com.sparta.delivery.cart.dto.CartItemUpdateDto;
 import com.sparta.delivery.cart.dto.CartResponseDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,19 @@ public class CartController {
         return ResponseEntity.ok(cartResponseDtos);
     }
 
+    // 장바구니 아이템 수량 변경
+    @PatchMapping
+    public ResponseEntity<String> updateCartAmount(@RequestBody CartItemUpdateDto cartItemDto) {
+        cartService.updateCartItemQuantity(cartItemDto.getCartItemId(), cartItemDto.getQuantity());
+        return ResponseEntity.ok("CartItem updated successfully");
+    }
+
+    // 장바구니 아이템 삭제
+    @DeleteMapping("/{cartItemId}")
+    public ResponseEntity<String> deleteCartItem(@PathVariable UUID cartItemId) {
+        cartService.deleteCartItem(cartItemId);
+        return ResponseEntity.ok("CartItem deleted successfully");
+    }
 
 
 }

@@ -21,6 +21,9 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
+
+    // 장바구니에 상품 추가 (상품 추가시 장바구니 생성)
+    @Transactional
     public UUID addCartItem(User user, CartItemDto cartItemDto) {
         Product product = productRepository.findById(cartItemDto.getProductId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
@@ -56,11 +59,12 @@ public class CartService {
         List<CartResponseDto> cartResponseDtoList = new ArrayList<>();
         Cart cart = cartRepository.findByUserId(user.getId());
 
-        // 카트가 없으면 빈 리스트 반환
+        // 장바구니가 없으면 빈 리스트 반환
         if (cart == null) {
             return cartResponseDtoList;
         }
 
+        // 장바구니에 있는 상품들 dto 로 변환
         List<CartItem> cartItems = cartItemRepository.findByCart(cart);
         cartResponseDtoList = cartItems.stream()
                 .map(this::mapToCartResponseDto)
@@ -69,10 +73,34 @@ public class CartService {
         return cartResponseDtoList;
     }
 
+    // 장바구니 아이템 수량 변경
+    @Transactional
+    public void updateCartItemQuantity(UUID cartItemId, int quantity) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
+                );
+
+        cartItem.updateQuantity(quantity);
+    }
+
+    // 장바구니 아이템 삭제
+    @Transactional
+    public void deleteCartItem(UUID cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
+                );
+        cartItemRepository.delete(cartItem);
+    }
+
+
+
+
     // CartItem 을 CartResponseDto 로 매핑하는 메서드
     public CartResponseDto mapToCartResponseDto(CartItem cartItem) {
         return new CartResponseDto(
-                cartItem.getCart().getId(),
+                cartItem.getId(),
                 cartItem.getProduct().getProductId(),
                 cartItem.getProduct().getProductName(),
                 cartItem.getProduct().getPrice(),
