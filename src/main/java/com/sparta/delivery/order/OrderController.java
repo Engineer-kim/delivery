@@ -18,6 +18,7 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
 
+    // 주문 생성
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -35,4 +36,7 @@ public class OrderController {
         OrderResponseDto responseDto = orderService.getOrderDetails(orderId);
         return ResponseEntity.ok(responseDto);
     }
+
+    // 주문 전체 조회
+
 }

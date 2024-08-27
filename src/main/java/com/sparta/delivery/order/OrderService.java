@@ -31,6 +31,8 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
 
+
+    // 주문 생성
     @Transactional
     public UUID createOrder(User user, OrderRequestDto requestDto) {
 
@@ -45,6 +47,7 @@ public class OrderService {
     }
 
 
+    // 주문에 장바구니 상품들 추가
     @Transactional
     public OrderResponseDto addOrderItems(UUID orderId) {
         Order order = orderRepository.findById(orderId)
@@ -88,6 +91,7 @@ public class OrderService {
 
 
 
+    // 주문 단건 조회
     @Transactional(readOnly = true)
     public OrderResponseDto getOrderDetails(UUID orderId) {
         Order order = orderRepository.findById(orderId)
@@ -109,6 +113,7 @@ public class OrderService {
     }
 
 
+    // order -> dto 매퍼
     public static OrderResponseDto toOrderResponseDto(Order order) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setOrderId(order.getId());

@@ -46,10 +46,10 @@ public class UserController {
 
     // 회원 탈퇴 (본인)
     @DeleteMapping("/users/me")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long userId = userDetails.getUser().getId();
         userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("탈퇴가 완료되었습니다.");
     }
 
 
@@ -83,11 +83,11 @@ public class UserController {
     // 관리자가 회원 탈퇴
     @DeleteMapping("/users/{userId}")
     @Secured(UserRoleEnum.Authority.MASTER) // 관리자 권한만 허용
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long userId,
+    public ResponseEntity<String> deactivateUser(@PathVariable Long userId,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long adminId = userDetails.getUser().getId();
         userService.deactivateUser(adminId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("탈퇴가 완료되었습니다.");
     }
 
 }

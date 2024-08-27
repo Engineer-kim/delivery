@@ -1,6 +1,5 @@
 package com.sparta.delivery.order.dto;
 
-import com.sparta.delivery.order.OrderItem;
 import com.sparta.delivery.order.OrderStatusEnum;
 import com.sparta.delivery.order.OrderTypeEnum;
 import lombok.Getter;
