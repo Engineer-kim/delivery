@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/orders")
@@ -19,12 +21,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(
+    public OrderResponseDto createOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody OrderRequestDto requestDto
     ) {
-        OrderResponseDto responseDto = orderService.createOrder(userDetails.getUser(),requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-
+        UUID orderId = orderService.createOrder(userDetails.getUser(),requestDto);
+        OrderResponseDto responseDto = orderService.addOrderItems(orderId);
+        return responseDto;
     }
 }

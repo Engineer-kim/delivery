@@ -51,11 +51,11 @@ public class User extends TimeStamped {
     // 외래키
 
     // User가 여러 개의 주소를 가질 수 있는 일대다 관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<UserAddress> addressList = new ArrayList<>();
 
     // User가 여러 개의 Order를 가질 수 있는 일대다 관계
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Order> orderList = new ArrayList<>();
 
 //    @ManyToOne(fetch = FetchType.LAZY)
