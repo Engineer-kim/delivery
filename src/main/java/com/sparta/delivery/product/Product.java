@@ -1,5 +1,6 @@
 package com.sparta.delivery.product;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.order.Order;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
