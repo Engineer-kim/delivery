@@ -59,7 +59,7 @@ public class ProductService {
         return ResponseEntity.ok().body(response);
     }
 
-    public Product updateProduct(UUID productId, Product productDetails) {
+    public ProductSingleResponse updateProduct(UUID productId, Product productDetails) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
@@ -67,7 +67,8 @@ public class ProductService {
             product.setDescription(productDetails.getDescription());
             product.setPrice(productDetails.getPrice());
             product.setPublic(productDetails.isPublic());
-            return productRepository.save(product);
+            productRepository.save(product);
+            return new ProductSingleResponse(product);
         } else {
             throw new RuntimeException("상품을 찾을 수 없습니다.");
         }

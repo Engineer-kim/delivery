@@ -1,5 +1,6 @@
 package com.sparta.delivery.product;
 
+
 import com.sparta.delivery.product.dto.PageDto;
 import com.sparta.delivery.product.dto.ProductAddRequestDto;
 import com.sparta.delivery.product.dto.ProductAddResponseDto;
@@ -54,7 +55,7 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable UUID id,
         @RequestBody Product productDetails) {
         try {
-            Product updatedProduct = productService.updateProduct(id, productDetails);
+            ProductSingleResponse updatedProduct = productService.updateProduct(id, productDetails);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 상품을 찾을 수 없습니다.");
@@ -92,5 +93,6 @@ public class ProductController {
         PageDto pageDto = productService.getAllProducts(pageable, search);
         return ResponseEntity.ok(pageDto);
     }
+
 }
 
