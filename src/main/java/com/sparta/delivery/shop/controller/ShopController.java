@@ -3,6 +3,7 @@ package com.sparta.delivery.shop.controller;
 import com.sparta.delivery.common.ApiResponse;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.product.ProductService;
+import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.shop.dto.ShopData;
 import com.sparta.delivery.shop.dto.ShopRequest;
 import com.sparta.delivery.shop.dto.ShopResponse;
@@ -16,16 +17,15 @@ import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class ShopController {
 
     private final ShopService storeService;
@@ -33,11 +33,13 @@ public class ShopController {
     private final ProductService productService;
 
     /**거게 정보 추가*/
-    @PostMapping
-    public ResponseEntity<ApiResponse> addStore(@RequestBody ShopRequest shopRequest) {
-        UserInfoDto user = userService.getUserInfo(shopRequest.getUserId());
-        List<Product> productList = (List<Product>) productService.getProductById(shopRequest.getProductId());
-        ShopResponse shopResponse = storeService.addStore(shopRequest ,user, productList);
+    @PostMapping("/shops")
+    public ResponseEntity<ApiResponse> addStore(@RequestBody ShopRequest shopRequest,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getId();
+        Product product = productService.getProductById(shopRequest.getProductId()).getBody().getProduct();
+        List<Product> productList = Collections.singletonList(product);
+        ShopResponse shopResponse = storeService.addStore(shopRequest ,userId, productList);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(
                 shopResponse.getStatusCode(),
                 shopResponse.getStatus(),

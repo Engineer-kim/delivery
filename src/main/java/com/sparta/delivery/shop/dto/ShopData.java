@@ -19,4 +19,5 @@ public class ShopData {
     private LocalTime shopOpenTime;
     private LocalTime shopClosedTime;
     private String shopPhone;
+    private Long userId;
 }

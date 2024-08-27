@@ -51,7 +51,11 @@ public class Store extends TimeStamped {
     @OneToMany(mappedBy = "store")
     private List<Product> products;
     /**유저 아이디*/
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)  // User 엔티티와 관계 설정
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
+
 }
