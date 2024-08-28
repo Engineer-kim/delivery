@@ -1,6 +1,9 @@
 package com.sparta.delivery.user;
 
+import com.sparta.delivery.address.UserAddress;
 import com.sparta.delivery.address.UserAddressRepository;
+import com.sparta.delivery.address.UserAddressService;
+import com.sparta.delivery.address.dto.UserAddressResponseDto;
 import com.sparta.delivery.user.dto.SignupRequestDto;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import com.sparta.delivery.user.dto.UserRequestDto;
@@ -91,8 +94,6 @@ public class UserService {
             user.setPassword(encodedPassword);
         }
 
-        // 추가 필드 업데이트도 필요시 추가할 수 있습니다.
-
         User upadtedUser = userRepository.save(user);
 
         return convertToUserInfoDto(upadtedUser);
@@ -160,7 +161,24 @@ public class UserService {
 
     // 엔티티 -> dto 변환
     public UserInfoDto convertToUserInfoDto(User user) {
-        return new UserInfoDto(user.getUsername(), user.getRole());
+        List<UserAddressResponseDto> addressList = getAddressesForUser(user.getId());
+        return new UserInfoDto(user.getId(), user.getUsername(), user.getRole(), addressList);
+    }
+
+    private List<UserAddressResponseDto> getAddressesForUser(Long userId) {
+        List<UserAddress> userAddressList = userAddressRepository.findByUserIdAndIsDeletedFalse(userId);
+        return userAddressList.stream()
+                .map(this::convertToAddressDto)
+                .collect(Collectors.toList());
+    }
+
+    private UserAddressResponseDto convertToAddressDto(UserAddress userAddress) {
+        return new UserAddressResponseDto(
+                userAddress.getId(),
+                userAddress.getAddressName(),
+                userAddress.getLine1(),
+                userAddress.getLine2()
+        );
     }
 
     // 관리자 여부 확인
