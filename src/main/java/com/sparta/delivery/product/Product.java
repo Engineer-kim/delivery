@@ -1,6 +1,7 @@
 package com.sparta.delivery.product;
 
 import com.sparta.delivery.order.Order;
+import com.sparta.delivery.shop.entity.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -54,6 +55,5 @@ public class Product {
         this.description = description;
         this.price = price;
     }
-
 }
 
