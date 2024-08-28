@@ -41,9 +41,6 @@ public class Review {
     @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "db_sts", length = 1, nullable = false)
-    private String dbStatus;
-
     @PrePersist
     private void setDefaultStatus() {
         if (this.deleteStatus == null) {

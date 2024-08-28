@@ -2,6 +2,7 @@ package com.sparta.delivery.product;
 
 import com.sparta.delivery.order.Order;
 import com.sparta.delivery.order.OrderItem;
+import com.sparta.delivery.shop.entity.Store;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -43,6 +44,11 @@ public class Product {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "order_id")
 //    private Order order;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
 
     @Builder
     public Product(String productName, String description, int price) {
