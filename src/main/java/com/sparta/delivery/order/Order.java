@@ -1,5 +1,6 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "p_orders")
-public class Order {
+public class Order extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -26,12 +29,12 @@ public class Order {
 
     // 주문 종류(배달 주문 or 포장 주문)
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "type")
     private OrderTypeEnum type;
 
-    // 배달 상태(진행중, 완료, 취소)
+    // 주문 상태(주문 전, 진행중, 완료, 취소)
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private OrderStatusEnum status;
 
     // 요청사항
@@ -43,8 +46,29 @@ public class Order {
     private boolean isDeleted = false;
 
 
+    // 주문 총 금액 계산
+    public Integer calculateTotalAmount() {
+        return orderItems.stream()
+                .mapToInt(item -> item.getPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItems.remove(orderItem);
+        orderItem.setOrder(null);
+    }
+
     // 외래키
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
 }

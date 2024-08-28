@@ -1,6 +1,7 @@
 package com.sparta.delivery.user;
 
 import com.sparta.delivery.address.UserAddress;
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.order.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -19,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "p_users")
-public class User {
+public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,18 +51,12 @@ public class User {
     // 외래키
 
     // User가 여러 개의 주소를 가질 수 있는 일대다 관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<UserAddress> addressList = new ArrayList<>();
 
     // User가 여러 개의 Order를 가질 수 있는 일대다 관계
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Order> orderList = new ArrayList<>();
-
-    public User(String username, String password, UserRoleEnum role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "store_id")
@@ -69,5 +64,10 @@ public class User {
 
 
     // 생성자
+    public User(String username, String password, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
 }

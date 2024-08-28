@@ -1,11 +1,9 @@
 package com.sparta.delivery.address;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -14,8 +12,9 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "p_addresses")
-public class UserAddress {
+public class UserAddress extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -44,4 +43,8 @@ public class UserAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+
+    // 생성자
 }
