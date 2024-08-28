@@ -15,8 +15,10 @@ import com.sparta.delivery.user.UserRoleEnum;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +69,7 @@ public class ShopService {
         return convertToDto(store);
     }
     /**가게 정보 가게 정보 수정*/
+    @Transactional
     public ShopData updateShopInfo(Long userId, Long id  , ShopRequest updateRequest) {
         User user = getUserAndCheckAuthorization(userId);
         Store store = storeRepository.findById(id)
@@ -153,15 +156,15 @@ public class ShopService {
     }
 
     private boolean isUserAuthorized(UserRoleEnum role) {
-        return role == UserRoleEnum.MANAGER || role == UserRoleEnum.MASTER;
+        return role == UserRoleEnum.OWNER || role == UserRoleEnum.MASTER;
     }
 
     private User getUserAndCheckAuthorization(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND ,"사용자를 찾을 수 없습니다."));
 
         if (!isUserAuthorized(user.getRole())) {
-            throw new RuntimeException("권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
 
         return user;
