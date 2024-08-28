@@ -14,6 +14,7 @@ import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRoleEnum;
 import com.sparta.delivery.user.UserService;
 import com.sparta.delivery.user.dto.UserInfoDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,7 +120,7 @@ public class ShopController {
             ApiResponse errorResponse = new ApiResponse(
                     500,
                     "fail",
-                    "가게 단건 조회 도중 오류가 발생했습니다"  + e.getMessage(),
+                    "가게 수정 도중 오류가 발생했습니다"  + e.getMessage(),
                     null
             );
 
@@ -130,51 +131,15 @@ public class ShopController {
     /**가게 정보 삭제*/
     @DeleteMapping("/shops/{id}")
     public ResponseEntity<ApiResponse> deleteShop(@PathVariable UUID id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
             Long userId = userDetails.getUser().getId();
-            storeService.deleteShop(id ,userId);
-            ApiResponse response = new ApiResponse(
-                    200,
-                    "success",
-                    "해당 가게 미사용(삭제)상태로 처리되었습니다",
-                    null
-            );
-
+            ApiResponse response =  storeService.deleteShop(id ,userId);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ApiResponse errorResponse = new ApiResponse(
-                    500,
-                    "fail",
-                    "가게 삭제 처리 도중 오류가 발생했습니다"  + e.getMessage(),
-                    null
-            );
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
     }
-    /**가게 정보 삭제*/
+    /**가게 비공게 처리*/
     @DeleteMapping("/shops/{id}/privacy")
     public ResponseEntity<ApiResponse> makePrivateShop(@PathVariable UUID id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        try {
-            Long userId = userDetails.getUser().getId();
-            storeService.makePrivateShop(id ,userId);
-            ApiResponse response = new ApiResponse(
-                    200,
-                    "success",
-                    "해당 가게 비공개상태로 처리되었습니다",
-                    null
-            );
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ApiResponse errorResponse = new ApiResponse(
-                    500,
-                    "fail",
-                    "가게 비공개 처리 도중 오류가 발생했습니다",
-                    null
-            );
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        Long userId = userDetails.getUser().getId();
+        ApiResponse response = storeService.makePrivateShop(id, userId);
+        return ResponseEntity.ok(response);
     }
 }
