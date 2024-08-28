@@ -7,12 +7,11 @@ import com.sparta.delivery.shop.dto.ShopResponse;
 import com.sparta.delivery.shop.entity.Store;
 import com.sparta.delivery.shop.exception.StoreException;
 import com.sparta.delivery.shop.repo.ShopRepository;
-import com.sparta.delivery.shop.statusEnum.ShopDataStatus;
-import com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus;
+import com.sparta.delivery.common.statusEnum.DataStatus;
+import com.sparta.delivery.common.statusEnum.PrivacyStatus;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRepository;
 import com.sparta.delivery.user.UserRoleEnum;
-import com.sparta.delivery.user.dto.UserInfoDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,9 +92,9 @@ public class ShopService {
     @Transactional
     public void deleteShop(Long id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store findResult = storeRepository.findByIdAndDeleteStatus(id, ShopDataStatus.U)
+        Store findResult = storeRepository.findByIdAndDeleteStatus(id, DataStatus.U)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        findResult.setDeleteStatus(ShopDataStatus.D);
+        findResult.setDeleteStatus(DataStatus.D);
         storeRepository.save(findResult);
     }
 
@@ -105,9 +102,9 @@ public class ShopService {
     @Transactional
     public void makePrivateShop(Long id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store findResult = storeRepository.findByIdAndPrivacyStatus(id, ShopPrivacyStatus.P)
+        Store findResult = storeRepository.findByIdAndPrivacyStatus(id, PrivacyStatus.P)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        findResult.setPrivacyStatus(ShopPrivacyStatus.R);
+        findResult.setPrivacyStatus(PrivacyStatus.R);
         storeRepository.save(findResult);
     }
 

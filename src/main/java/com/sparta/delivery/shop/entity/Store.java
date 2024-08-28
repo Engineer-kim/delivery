@@ -2,19 +2,15 @@ package com.sparta.delivery.shop.entity;
 
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.product.Product;
-import com.sparta.delivery.shop.statusEnum.ShopDataStatus;
-import com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus;
+import com.sparta.delivery.common.statusEnum.DataStatus;
+import com.sparta.delivery.common.statusEnum.PrivacyStatus;
 import com.sparta.delivery.shop.statusEnum.shopType.ShopType;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
-
-import static com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus.P;
 
 @Entity
 @Table(name = "p_store")
@@ -60,13 +56,13 @@ public class Store extends TimeStamped {
     /**삭제 여부 판단*/
     @Enumerated(EnumType.STRING)
     @Column(name = "db_sts",nullable = false , columnDefinition = "VARCHAR(1)")
-    private ShopDataStatus deleteStatus;
+    private DataStatus deleteStatus;
 
     /**공개 여부*/
     @Enumerated(EnumType.STRING)
     @Column(name = "public_sts", nullable = false, columnDefinition = "VARCHAR(1)")
-    private ShopPrivacyStatus privacyStatus;
-    
+    private PrivacyStatus privacyStatus;
+
     /**프로덕트와 연관관계*/
     @OneToMany(mappedBy = "store")
     private List<Product> products;
@@ -81,10 +77,10 @@ public class Store extends TimeStamped {
     @PrePersist
     private void setDefaultStatus() {
         if (this.deleteStatus == null) {
-            this.deleteStatus = ShopDataStatus.U; // 기본값 설정
+            this.deleteStatus = DataStatus.U; // 기본값 설정
         }
         if (this.privacyStatus == null) {
-            this.privacyStatus = ShopPrivacyStatus.P; // 기본값 설정
+            this.privacyStatus = PrivacyStatus.P; // 기본값 설정
         }
     }
 }
