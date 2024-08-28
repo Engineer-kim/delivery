@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
 
 @Getter
 @Setter
@@ -44,12 +45,6 @@ public class Product {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "order_id")
 //    private Order order;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
-
     @Builder
     public Product(String productName, String description, int price) {
         this.productName = productName;
@@ -57,4 +52,8 @@ public class Product {
         this.price = price;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id", referencedColumnName = "shopId")
+    private Store store;
 }
+

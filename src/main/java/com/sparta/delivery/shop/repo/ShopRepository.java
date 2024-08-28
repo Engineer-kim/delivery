@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ShopRepository extends JpaRepository<Store , Long>{
+public interface ShopRepository extends JpaRepository<Store , UUID>{
 
     @Query("SELECT s FROM Store s WHERE s.shopId = :shopId  AND s.deleteStatus = :deleteStatus")
     Optional<Store> findByIdAndDeleteStatus(@Param("shopId") Long shopId , @Param("deleteStatus") DataStatus deleteStatus);

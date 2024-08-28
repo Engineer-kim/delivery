@@ -11,6 +11,8 @@ import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
+
 
 @Entity
 @Table(name = "p_store")
@@ -23,10 +25,9 @@ import java.util.List;
 public class Store extends TimeStamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shop_seq")
-    @SequenceGenerator(name = "shop_seq", sequenceName = "shop_sequence", allocationSize = 1)
-    //**샵 아이디 식별자*/
-    private Long shopId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    /**샵 아이디 식별자*/
+    private UUID shopId;
 
     @Column(nullable = false, length = 30)
     //**가게 이름*/

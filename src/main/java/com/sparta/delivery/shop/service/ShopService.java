@@ -1,5 +1,6 @@
 package com.sparta.delivery.shop.service;
 
+import com.sparta.delivery.common.ApiResponse;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.shop.dto.ShopData;
 import com.sparta.delivery.shop.dto.ShopRequest;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +35,6 @@ public class ShopService {
     public ShopResponse addStore(ShopRequest shopRequest , Long userId, List<Product> products) {
         try {
             User user = getUserAndCheckAuthorization(userId);
-
             Store store = convertToEntity(shopRequest, userId, products);
             System.out.println("UserId:::::::::" + userId);
             Store savedStore = storeRepository.save(store);
@@ -58,14 +59,14 @@ public class ShopService {
                 .collect(Collectors.toList());
     }
     /**가게 정보 상세 조회(단건)*/
-    public ShopData getOneShop(Long userId, Long id) {
+    public ShopData getOneShop(Long userId, UUID id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
         return convertToDto(store);
     }
     /**가게 정보 가게 정보 수정*/
     @Transactional
-    public ShopData updateShopInfo(Long userId, Long id  , ShopRequest updateRequest) {
+    public ShopData updateShopInfo(Long userId, UUID id  , ShopRequest updateRequest) {
         User user = getUserAndCheckAuthorization(userId);
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
@@ -80,6 +81,8 @@ public class ShopService {
                 .shopCloseTime(updateRequest.getShopCloseTime() != null ? updateRequest.getShopCloseTime() : store.getShopCloseTime())
                 .shopPhone(updateRequest.getShopPhone() != null ? updateRequest.getShopPhone() : store.getShopPhone())
                 .userId(userId)
+                .deleteStatus(DataStatus.U)
+                .privacyStatus(PrivacyStatus.P)
                 .products(store.getProducts())
                 .build();
 
@@ -90,22 +93,46 @@ public class ShopService {
     }
     /**가게 정보 삭제*/
     @Transactional
-    public void deleteShop(Long id, Long userId) {
+    public ApiResponse deleteShop(UUID id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store findResult = storeRepository.findByIdAndDeleteStatus(id, DataStatus.U)
-                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        findResult.setDeleteStatus(DataStatus.D);
-        storeRepository.save(findResult);
+        try {
+            Store findResult = storeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
+            if (findResult.getDeleteStatus() == DataStatus.D) {
+                throw new IllegalStateException("가게는 이미 삭제되었습니다.");
+            }
+            findResult.setDeleteStatus(DataStatus.D);
+            storeRepository.save(findResult);
+            return new ApiResponse(200, "success", "해당 가게 미사용(삭제)상태로 처리되었습니다", null);
+        } catch (EntityNotFoundException e) {
+            return new ApiResponse(404, "fail", "가게를 찾을 수 없습니다. 유효한 가게 ID를 입력했는지 확인해 주세요.", null);
+        } catch (IllegalStateException e) {
+            return new ApiResponse(400, "fail", "가게는 이미 삭제된 상태입니다", null);
+        } catch (Exception e) {
+            return new ApiResponse(500, "fail", "가게 삭제 처리 도중 오류가 발생했습니다: " + e.getMessage(), null);
+        }
     }
 
     /**가게 비공개 처리*/
     @Transactional
-    public void makePrivateShop(Long id, Long userId) {
+    public ApiResponse makePrivateShop(UUID id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
-        Store findResult = storeRepository.findByIdAndPrivacyStatus(id, PrivacyStatus.P)
-                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
-        findResult.setPrivacyStatus(PrivacyStatus.R);
-        storeRepository.save(findResult);
+        try {
+            Store findResult = storeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("해당 ID의 가게를 찾을 수 없습니다."));
+            if (findResult.getDeleteStatus() == DataStatus.D) {
+                throw new IllegalStateException("가게는 이미 비공개 처리 된 상태입니다.");
+            }
+            findResult.setPrivacyStatus(PrivacyStatus.R);
+            storeRepository.save(findResult);
+            return new ApiResponse(200, "success", "해당 가게 비공개상태로 처리되었습니다", null);
+        } catch (EntityNotFoundException e) {
+            return new ApiResponse(404, "fail", "가게를 찾을 수 없습니다. 유효한 ID를 입력했는지 확인해 주세요.", null);
+        } catch (IllegalStateException e) {
+            return new ApiResponse(400, "fail", "가게는 이미 비공개 처리 된 상태입니다", null);
+        }catch (Exception e) {
+            return new ApiResponse(500, "fail", "가게 비공개 처리 도중 오류가 발생했습니다: " + e.getMessage(), null);
+        }
     }
 
     //  Entity ->  DTO
