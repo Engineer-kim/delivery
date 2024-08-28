@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,7 +76,7 @@ public class ShopController {
 
     /**가게 정보 상세 조회*/
     @GetMapping("/shops/{id}")
-    public ResponseEntity<ApiResponse> getOneShop(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getOneShop(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable UUID id) {
         try {
             Long userId = userDetails.getUser().getId();
             ShopData findOne = storeService.getOneShop(userId , id);
@@ -101,7 +102,7 @@ public class ShopController {
 
     /**가게 정보 가게 정보 수정*/
     @PutMapping("/shops/{id}")
-    public ResponseEntity<ApiResponse> updateShopInfo(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable Long id,
+    public ResponseEntity<ApiResponse> updateShopInfo(@AuthenticationPrincipal UserDetailsImpl userDetails ,@PathVariable UUID id,
                                                       @RequestBody ShopRequest updateRequest) {
         try {
             Long userId = userDetails.getUser().getId();
@@ -128,7 +129,7 @@ public class ShopController {
 
     /**가게 정보 삭제*/
     @DeleteMapping("/shops/{id}")
-    public ResponseEntity<ApiResponse> deleteShop(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse> deleteShop(@PathVariable UUID id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             Long userId = userDetails.getUser().getId();
             storeService.deleteShop(id ,userId);
@@ -153,7 +154,7 @@ public class ShopController {
     }
     /**가게 정보 삭제*/
     @DeleteMapping("/shops/{id}/privacy")
-    public ResponseEntity<ApiResponse> makePrivateShop(@PathVariable Long id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse> makePrivateShop(@PathVariable UUID id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
             Long userId = userDetails.getUser().getId();
             storeService.makePrivateShop(id ,userId);

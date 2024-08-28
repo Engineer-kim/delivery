@@ -8,13 +8,11 @@ import com.sparta.delivery.shop.statusEnum.shopType.ShopType;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus.P;
 
 @Entity
 @Table(name = "p_store")
@@ -27,10 +25,9 @@ import static com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus.P;
 public class Store extends TimeStamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shop_seq")
-    @SequenceGenerator(name = "shop_seq", sequenceName = "shop_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     /**샵 아이디 식별자*/
-    private Long shopId;
+    private UUID shopId;
 
     @Column(nullable = false, length = 30)
     /**가게 이름*/

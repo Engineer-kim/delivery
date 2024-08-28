@@ -36,7 +36,6 @@ public class ShopService {
     public ShopResponse addStore(ShopRequest shopRequest , Long userId, List<Product> products) {
         try {
             User user = getUserAndCheckAuthorization(userId);
-
             Store store = convertToEntity(shopRequest, userId, products);
             System.out.println("UserId:::::::::" + userId);
             Store savedStore = storeRepository.save(store);
@@ -61,14 +60,14 @@ public class ShopService {
                 .collect(Collectors.toList());
     }
     /**가게 정보 상세 조회(단건)*/
-    public ShopData getOneShop(Long userId, Long id) {
+    public ShopData getOneShop(Long userId, UUID id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
         return convertToDto(store);
     }
     /**가게 정보 가게 정보 수정*/
     @Transactional
-    public ShopData updateShopInfo(Long userId, Long id  , ShopRequest updateRequest) {
+    public ShopData updateShopInfo(Long userId, UUID id  , ShopRequest updateRequest) {
         User user = getUserAndCheckAuthorization(userId);
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
@@ -93,7 +92,7 @@ public class ShopService {
     }
     /**가게 정보 삭제*/
     @Transactional
-    public void deleteShop(Long id, Long userId) {
+    public void deleteShop(UUID id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
         Store findResult = storeRepository.findByIdAndDeleteStatus(id, ShopDataStatus.U)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
@@ -103,7 +102,7 @@ public class ShopService {
 
     /**가게 비공개 처리*/
     @Transactional
-    public void makePrivateShop(Long id, Long userId) {
+    public void makePrivateShop(UUID id, Long userId) {
         User user = getUserAndCheckAuthorization(userId);
         Store findResult = storeRepository.findByIdAndPrivacyStatus(id, ShopPrivacyStatus.P)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));

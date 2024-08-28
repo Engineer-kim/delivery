@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ShopRepository extends JpaRepository<Store , Long>{
+public interface ShopRepository extends JpaRepository<Store , UUID>{
 
     @Query("SELECT s FROM Store s WHERE s.shopId = :shopId  AND s.deleteStatus = :deleteStatus")
-    Optional<Store> findByIdAndDeleteStatus(@Param("shopId") Long shopId , @Param("deleteStatus") ShopDataStatus deleteStatus);
+    Optional<Store> findByIdAndDeleteStatus(@Param("shopId") UUID shopId , @Param("deleteStatus") ShopDataStatus deleteStatus);
 
     @Query("SELECT s FROM Store s WHERE s.shopId = :shopId  AND s.privacyStatus = :privacyStatus")
-    Optional<Store> findByIdAndPrivacyStatus(@Param("shopId") Long shopId , @Param("privacyStatus") ShopPrivacyStatus shopPrivacyStatus);
+    Optional<Store> findByIdAndPrivacyStatus(@Param("shopId") UUID shopId , @Param("privacyStatus") ShopPrivacyStatus shopPrivacyStatus);
 }
