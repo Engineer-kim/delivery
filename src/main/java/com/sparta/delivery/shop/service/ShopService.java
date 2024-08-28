@@ -55,7 +55,6 @@ public class ShopService {
     }
     /**가게 정보 조회(다건)*/
     public List<ShopData> getAllShops(Long userId) {
-        User user = getUserAndCheckAuthorization(userId);
         List<Store> stores = storeRepository.findAll();
         return stores.stream()
                 .map(this::convertToDto)
@@ -63,7 +62,6 @@ public class ShopService {
     }
     /**가게 정보 상세 조회(단건)*/
     public ShopData getOneShop(Long userId, Long id) {
-        User user = getUserAndCheckAuthorization(userId);
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
         return convertToDto(store);
@@ -87,10 +85,6 @@ public class ShopService {
                 .userId(userId)
                 .products(store.getProducts())
                 .build();
-
-        System.out.println(" updateResult.getShopOpenTime()::::::::::::::;" +  updateResult.getShopOpenTime());
-        System.out.println(" updateResult. store.getShopOpenTime()()::2wqeqweqeq2e::::::::::::;" +   store.getShopOpenTime());
-        System.out.println(" updateResult.getClosedTime()::::::::::::::::::;" +  updateResult.getShopCloseTime());
 
         Store updatedStore = storeRepository.save(updateResult);
 

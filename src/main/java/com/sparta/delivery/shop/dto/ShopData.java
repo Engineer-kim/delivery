@@ -1,5 +1,6 @@
 package com.sparta.delivery.shop.dto;
 
+import com.sparta.delivery.shop.statusEnum.shopType.ShopType;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -15,7 +16,7 @@ public class ShopData {
     private Long shopId;
     private String shopName;
     private String shopAddress;
-    private String shopType;
+    private ShopType shopType;
     private LocalTime shopOpenTime;
     private LocalTime shopClosedTime;
     private String shopPhone;

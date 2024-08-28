@@ -4,9 +4,11 @@ import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.shop.statusEnum.ShopDataStatus;
 import com.sparta.delivery.shop.statusEnum.ShopPrivacyStatus;
+import com.sparta.delivery.shop.statusEnum.shopType.ShopType;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -38,9 +40,10 @@ public class Store extends TimeStamped {
     /**가게 주소*/
     private String shopAddress;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     /**가게 타입*/
-    private String shopType;
+    private ShopType shopType;
 
     @Column(nullable = false)
     /**가게 오픈 시각*/
@@ -74,4 +77,14 @@ public class Store extends TimeStamped {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @PrePersist
+    private void setDefaultStatus() {
+        if (this.deleteStatus == null) {
+            this.deleteStatus = ShopDataStatus.U; // 기본값 설정
+        }
+        if (this.privacyStatus == null) {
+            this.privacyStatus = ShopPrivacyStatus.P; // 기본값 설정
+        }
+    }
 }
