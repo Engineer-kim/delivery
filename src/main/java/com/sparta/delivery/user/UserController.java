@@ -46,10 +46,10 @@ public class UserController {
 
     // 회원 탈퇴 (본인)
     @DeleteMapping("/users/me")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long userId = userDetails.getUser().getId();
         userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("탈퇴가 완료되었습니다.");
     }
 
 
@@ -60,14 +60,23 @@ public class UserController {
 
     // 모든 회원 조회
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.MANAGER})
-    @GetMapping("/users")
+    @GetMapping("/users/admin/all")
     public ResponseEntity<List<UserInfoDto>> getAllUserInfos() {
         List<UserInfoDto> userInfoDtoList = userService.getAllUserInfos();
         return new ResponseEntity<>(userInfoDtoList, HttpStatus.OK);
     }
 
+    // 회원 정보 단건 조회
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.MANAGER})
+    @GetMapping("/users/admin/{userId}")
+    public ResponseEntity<UserInfoDto> getUserInfo(@PathVariable Long userId) {
+        UserInfoDto userInfoDto = userService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfoDto);
+    }
+
     // 회원 이름으로 검색
-    @GetMapping("/users/search")
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.MANAGER})
+    @GetMapping("/users/admin/search")
     public ResponseEntity<Page<UserInfoDto>> searchUsers(
             @RequestParam String username,
             @RequestParam(defaultValue = "0") int page,
@@ -81,13 +90,13 @@ public class UserController {
 
 
     // 관리자가 회원 탈퇴
-    @DeleteMapping("/users/{userId}")
     @Secured(UserRoleEnum.Authority.MASTER) // 관리자 권한만 허용
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long userId,
+    @DeleteMapping("/users/admin/{userId}")
+    public ResponseEntity<String> deactivateUser(@PathVariable Long userId,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long adminId = userDetails.getUser().getId();
         userService.deactivateUser(adminId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("탈퇴가 완료되었습니다.");
     }
 
 }
