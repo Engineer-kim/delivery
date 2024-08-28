@@ -5,6 +5,7 @@ import com.sparta.delivery.cart.dto.CartItemUpdateDto;
 import com.sparta.delivery.cart.dto.CartResponseDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,16 @@ public class CartController {
     public ResponseEntity<String> deleteCartItem(@PathVariable UUID cartItemId) {
         cartService.deleteCartItem(cartItemId);
         return ResponseEntity.ok("CartItem deleted successfully");
+    }
+
+
+    // 장바구니 비우기
+    @DeleteMapping("/clear")
+    public ResponseEntity<String> clearCart(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        cartService.clearCart(userDetails.getUser());
+        return new ResponseEntity<>("장바구니가 비워졌습니다.", HttpStatus.OK);
     }
 
 

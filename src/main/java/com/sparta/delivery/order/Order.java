@@ -1,5 +1,6 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "p_orders")
-public class Order {
+public class Order extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

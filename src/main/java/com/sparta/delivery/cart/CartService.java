@@ -94,6 +94,19 @@ public class CartService {
         cartItemRepository.delete(cartItem);
     }
 
+    // 장바구니 비우기
+    @Transactional
+    public void clearCart(User user) {
+        Cart cart = cartRepository.findByUserId(user.getId());
+        if (cart == null) {
+            throw new IllegalArgumentException("장바구니가 없습니다.");
+        }
+
+        List<CartItem> cartItems = cartItemRepository.findByCart(cart);
+        if (!cartItems.isEmpty()) {
+            cartItemRepository.deleteAll(cartItems);
+        }
+    }
 
 
 

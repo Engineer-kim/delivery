@@ -1,6 +1,7 @@
 package com.sparta.delivery.cart;
 
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name="p_cart_items")
-public class CartItem {
+public class CartItem extends TimeStamped {
     @Id
     @Column(name = "cart_item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
