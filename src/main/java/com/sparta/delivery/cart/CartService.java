@@ -108,8 +108,6 @@ public class CartService {
         }
     }
 
-
-
     // CartItem 을 CartResponseDto 로 매핑하는 메서드
     public CartResponseDto mapToCartResponseDto(CartItem cartItem) {
         return new CartResponseDto(
