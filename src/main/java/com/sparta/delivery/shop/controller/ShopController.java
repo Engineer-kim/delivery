@@ -15,6 +15,8 @@ import com.sparta.delivery.user.UserRoleEnum;
 import com.sparta.delivery.user.UserService;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,18 +39,32 @@ public class ShopController {
     /**거게 정보 추가*/
     @PostMapping("/shops")
     public ResponseEntity<ApiResponse> addStore(@RequestBody ShopRequest shopRequest,
-                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long userId = userDetails.getUser().getId();
-        Product product = productService.getProductById(shopRequest.getProductId()).getBody().getProduct();
-        List<Product> productList = Collections.singletonList(product);
-        ShopResponse shopResponse = storeService.addStore(shopRequest ,userId, productList);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(
+
+        // productList를 초기화
+        List<Product> productList = new CopyOnWriteArrayList<>();//쓰기작업이 많지않으면서 멀티쓰레드 환경에서 적합함
+
+        // productId가 존재하는 경우에만 product를 추가합니다.
+        if (shopRequest.getProductId() != null) {
+            Product product = productService.getProductById(shopRequest.getProductId())
+                .getBody()
+                .getProduct();
+            productList.add(product);
+        }
+
+        ShopResponse shopResponse = storeService.addStore(shopRequest, userId, productList);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new ApiResponse(
                 shopResponse.getStatusCode(),
                 shopResponse.getStatus(),
                 shopResponse.getMessage(),
                 shopResponse
-        ));
+            ));
     }
+
+
     /**가게 정보 전체 조회*/
     @GetMapping("/shops")
     public ResponseEntity<ApiResponse> getAllShops(@AuthenticationPrincipal UserDetailsImpl userDetails) {
