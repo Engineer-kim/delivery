@@ -36,7 +36,7 @@ public class CartController {
     }
 
     // 장바구니 아이템 수량 변경
-    @PatchMapping
+    @PutMapping
     public ResponseEntity<String> updateCartAmount(@RequestBody CartItemUpdateDto cartItemDto) {
         cartService.updateCartItemQuantity(cartItemDto.getCartItemId(), cartItemDto.getQuantity());
         return ResponseEntity.ok("CartItem updated successfully");

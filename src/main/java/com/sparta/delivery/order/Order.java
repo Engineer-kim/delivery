@@ -1,6 +1,7 @@
 package com.sparta.delivery.order;
 
 import com.sparta.delivery.common.TimeStamped;
+import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -70,5 +71,8 @@ public class Order extends TimeStamped {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order")
+    private Review review;
 
 }
