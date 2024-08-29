@@ -1,5 +1,6 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.address.UserAddress;
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.shop.entity.Store;
@@ -47,22 +48,9 @@ public class Order extends TimeStamped {
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-
-    // 주문 총 금액 계산
-    public Integer calculateTotalAmount() {
-        return orderItems.stream()
-                .mapToInt(item -> item.getPrice() * item.getQuantity())
-                .sum();
-    }
-
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
-    }
-
-    public void removeOrderItem(OrderItem orderItem) {
-        orderItems.remove(orderItem);
-        orderItem.setOrder(null);
     }
 
     // 외래키
@@ -79,5 +67,9 @@ public class Order extends TimeStamped {
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")  // 단방향 연관관계 설정
+    private UserAddress address;
 
 }

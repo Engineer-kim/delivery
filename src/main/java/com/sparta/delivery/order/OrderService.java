@@ -1,26 +1,23 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.address.UserAddress;
+import com.sparta.delivery.address.UserAddressRepository;
 import com.sparta.delivery.cart.Cart;
 import com.sparta.delivery.cart.CartItem;
 import com.sparta.delivery.cart.CartItemRepository;
 import com.sparta.delivery.cart.CartRepository;
-import com.sparta.delivery.order.dto.OrderItemDto;
-import com.sparta.delivery.order.dto.OrderRequestDto;
-import com.sparta.delivery.order.dto.OrderResponseDto;
-import com.sparta.delivery.order.dto.OrderStatusUpdateDto;
-import com.sparta.delivery.order.orderitem.OrderItemRepository;
-import com.sparta.delivery.product.Product;
-import com.sparta.delivery.product.ProductRepository;
-import com.sparta.delivery.product.ProductService;
+import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.shop.entity.Store;
 import com.sparta.delivery.shop.repo.ShopRepository;
 import com.sparta.delivery.user.User;
-import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +29,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ShopRepository shopRepository;
+    private final UserAddressRepository userAddressRepository;
 
 
     // 주문 생성
@@ -41,14 +39,15 @@ public class OrderService {
         Store store = shopRepository.findById(requestDto.getShopId())
                 .orElseThrow(() -> new IllegalArgumentException("상점을 찾을 수 없습니다."));
 
-
+        UserAddress address = userAddressRepository.findById(requestDto.getAddressId())
+                .orElseThrow(() -> new IllegalArgumentException("주소를 찾을 수 없습니다."));
         Order order = new Order();
         order.setStatus(OrderStatusEnum.PENDING);
         order.setUser(user);
         order.setStore(store);
         order.setType(requestDto.getTypeEnum());
         order.setRequest(requestDto.getRequest());
-
+        order.setAddress(address);
         Order savedOrder = orderRepository.save(order);
         return savedOrder.getId();
     }
@@ -129,6 +128,16 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    // 가게별 전체 주문 조회 (가게 주인)
+    @Transactional(readOnly = true)
+    public List<OrderResponseDto> getAllOrdersByStore(UUID shopId) {
+        List<Order> orders = orderRepository.findByStore_ShopId(shopId);
+
+        return orders.stream()
+                .map(OrderService::toOrderResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
     // 주문 상태 수정 (가게 주인)
     @Transactional
@@ -165,38 +174,51 @@ public class OrderService {
         return toOrderResponseDto(order);
     }
 
+    // 상점 Status 로 주문 검색
+    public Page<OrderResponseDto> getOrdersByStatus(OrderStatusEnum status, int page, int size, String sort) {
+        // 페이지 크기 기본값
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
 
-    private OrderItem createOrderItem(Order order, CartItem cartItem) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrder(order);
-        orderItem.setProductId(cartItem.getProduct().getProductId());
-        orderItem.setProductName(cartItem.getProduct().getProductName());
-        orderItem.setPrice(cartItem.getProduct().getPrice());
-        orderItem.setQuantity(cartItem.getQuantity());
-        return orderItem;
+        // 정렬 방식 기본값
+        Sort sortOrder = Sort.by(Sort.Direction.ASC, "createdAt"); // 기본값: 생성일 순
+        if ("modifiedAt".equalsIgnoreCase(sort)) {
+            sortOrder = Sort.by(Sort.Direction.ASC, "modifiedAt"); // 수정일 순
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        Page<Order> orders = orderRepository.findByStatus(status, pageable);
+
+        // Page<Order>를 Page<OrderResponseDto>로 변환
+        return orders.map(OrderService::toOrderResponseDto);
     }
 
 
     // order -> dto 매퍼
     public static OrderResponseDto toOrderResponseDto(Order order) {
-        OrderResponseDto dto = new OrderResponseDto();
-        dto.setOrderId(order.getId());
-        dto.setShopId(order.getStore().getShopId());
-        dto.setShopName(order.getStore().getShopName());
-        dto.setUserId(order.getUser().getId()); // userId는 User 엔티티에서 가져옵니다
-        dto.setTypeEnum(order.getType());
-        dto.setStatusEnum(order.getStatus());
-        dto.setRequest(order.getRequest());
-        dto.setTotalAmount(order.getTotalAmount());
-        List<OrderItemDto> orderItemDtos = order.getOrderItems().stream()
-                .map(item -> new OrderItemDto(
-                        item.getProductId(),
-                        item.getProductName(),
-                        item.getQuantity(),
-                        item.getPrice()))
-                .collect(Collectors.toList());
+        Store store = order.getStore(); // 상점 정보 가져오기
+        OrderResponseDto dto = OrderResponseDto.builder()
+                .orderId(order.getId())
+                .userId(order.getUser().getId()) // userId는 User 엔티티에서 가져옵니다
+                .shopId(store.getShopId()) // 상점 ID
+                .shopName(store.getShopName()) // 상점 이름 추가
+                .typeEnum(order.getType())
+                .statusEnum(order.getStatus())
+                .request(order.getRequest())
+                .totalAmount(order.getTotalAmount())
+                .createdAt(order.getCreatedAt()) // 주문 일자 추가
+                .addressLine1(order.getAddress().getLine1()) // 주소 Line1 추가
+                .addressLine2(order.getAddress().getLine2()) // 주소 Line2 추가
+                .orderItems(order.getOrderItems().stream()
+                        .map(item -> new OrderItemDto(
+                                item.getProductId(),
+                                item.getProductName(),
+                                item.getQuantity(),
+                                item.getPrice()))
+                        .collect(Collectors.toList()))
+                .build();
 
-        dto.setOrderItems(orderItemDtos);
         return dto;
     }
 

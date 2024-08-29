@@ -5,6 +5,7 @@ import com.sparta.delivery.address.dto.UserAddressResponseDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -46,6 +47,20 @@ public class UserAddressController {
         UserAddressResponseDto responseDto = userAddressService.getAddressById(addressId);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    // 주소 Line1으로 검색
+    @GetMapping("/addresses/search")
+    public Page<UserAddressResponseDto> searchUserAddress(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = "true") boolean isAsc
+            ) {
+        return userAddressService.searchAddressByLine1(keyword, page-1, size, sortBy, isAsc);
+    }
+
+
 
     // 주소 수정
     @PutMapping("/addresses/{addressId}")

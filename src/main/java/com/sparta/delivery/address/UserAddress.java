@@ -44,7 +44,4 @@ public class UserAddress extends TimeStamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-
-
-    // 생성자
 }

@@ -7,10 +7,10 @@ import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,6 @@ import java.util.UUID;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderRepository orderRepository;
 
     // 주문 생성
     @PostMapping
@@ -50,6 +49,14 @@ public class OrderController {
         return ResponseEntity.ok(responseDtoList);
     }
 
+    // 가게별 주문 조회 (가게 주인)
+    @GetMapping("/shops/{shopId}")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByStore(@PathVariable UUID shopId) {
+        List<OrderResponseDto> responseDtoList = orderService.getAllOrdersByStore(shopId);
+        return ResponseEntity.ok(responseDtoList);
+    }
+
+
     // 본인 주문 취소
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<OrderResponseDto> cancelOrder(
@@ -60,6 +67,18 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
+    // 상점 Status 로 주문 검색
+    @GetMapping("/search")
+    public ResponseEntity<Page<OrderResponseDto>> getOrdersByStatus(
+            @RequestParam OrderStatusEnum status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort) {
+
+        Page<OrderResponseDto> orders = orderService.getOrdersByStatus(status, page, size, sort);
+
+        return ResponseEntity.ok(orders);
+    }
 
 
     // 주문 상태 수정 (가게 주인)
