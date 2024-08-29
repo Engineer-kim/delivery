@@ -1,5 +1,6 @@
 package com.sparta.delivery.product;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.order.Order;
 import com.sparta.delivery.shop.entity.Store;
 import jakarta.persistence.Column;
@@ -23,8 +24,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "p_products")
-public class Product {
+@Table(name = "products")
+public class Product extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -54,12 +55,11 @@ public class Product {
     private Store store;
 
     @Builder
-    public Product(String productName, String description, int price) {
+    public Product(String productName, String description, int price, Store store) {
+        this.store = store;
         this.productName = productName;
         this.description = description;
         this.price = price;
     }
-
-
 }
 
