@@ -52,6 +52,14 @@ public class OrderController {
         return ResponseEntity.ok(responseDtoList);
     }
 
+    // 가게별 주문 조회 (가게 주인)
+    @GetMapping("/shops/{shopId}")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByStore(@PathVariable UUID shopId) {
+        List<OrderResponseDto> responseDtoList = orderService.getAllOrdersByStore(shopId);
+        return ResponseEntity.ok(responseDtoList);
+    }
+
+
     // 본인 주문 취소
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<OrderResponseDto> cancelOrder(

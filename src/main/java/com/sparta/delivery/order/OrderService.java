@@ -130,6 +130,16 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    // 가게별 전체 주문 조회 (가게 주인)
+    @Transactional(readOnly = true)
+    public List<OrderResponseDto> getAllOrdersByStore(UUID shopId) {
+        List<Order> orders = orderRepository.findByStore_ShopId(shopId);
+
+        return orders.stream()
+                .map(OrderService::toOrderResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
     // 주문 상태 수정 (가게 주인)
     @Transactional

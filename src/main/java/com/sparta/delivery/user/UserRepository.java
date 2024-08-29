@@ -9,8 +9,5 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-    // 삭제되지 않은 유저만 조회
-    List<User> findAllByIsDeletedFalse();
-
     Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 }

@@ -7,6 +7,10 @@ import com.sparta.delivery.user.UserRoleEnum;
 import com.sparta.delivery.user.UserService;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ public class UserAddressService {
     private final UserService userService;
 
 
+    // 주소 생성
     public UserAddressResponseDto createAddress(UserAddressRequestDto requestDto, Long userId) {
         User user = userService.findUserById(userId);
 
@@ -100,6 +105,30 @@ public class UserAddressService {
     }
 
 
+    // 주소 line1 으로 검색
+    public List<UserAddressResponseDto> searchAddressByLine1(String searchKeyword) {
+        List<UserAddress> userAddressList = userAddressRepository.findAllByLine1ContainingIgnoreCase(searchKeyword);
+        return userAddressList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public Page<UserAddressResponseDto> searchAddressByLine1(String keyword, int page, int size, String sortBy, boolean isAsc) {
+
+        // 페이지 크기 제한 적용
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10; // 기본값으로 10 설정
+        }
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<UserAddress> userAddresses = userAddressRepository.findByLine1ContainingIgnoreCase(keyword, pageable);
+
+        return userAddresses.map(this::convertToDto);
+    }
+
+
     // MASTER : 모든 주소 조회
     public List<UserAddressResponseDto> getAllAddresses() {
         List<UserAddress> userAddresses = userAddressRepository.findAll();
@@ -113,5 +142,7 @@ public class UserAddressService {
     public UserAddressResponseDto convertToDto(UserAddress userAddress) {
         return new UserAddressResponseDto(userAddress.getId(), userAddress.getAddressName(), userAddress.getLine1(), userAddress.getLine2());
     }
+
+
 
 }
