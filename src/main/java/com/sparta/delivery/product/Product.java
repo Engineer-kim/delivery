@@ -1,5 +1,6 @@
 package com.sparta.delivery.product;
 
+import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.order.Order;
 import com.sparta.delivery.order.OrderItem;
 import com.sparta.delivery.shop.entity.Store;
@@ -21,7 +22,7 @@ import org.hibernate.annotations.Fetch;
 @AllArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,18 +43,20 @@ public class Product {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id")
-//    private Order order;
-    @Builder
-    public Product(String productName, String description, int price) {
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", referencedColumnName = "shopId")
     private Store store;
+
+    @Builder
+    public Product(String productName, String description, int price, Store store) {
+        this.store = store;
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+    }
 }
 
