@@ -32,25 +32,25 @@ public class ShopService {
 
     /**가게 정보 추가*/
     @Transactional
-    public ShopResponse addStore(ShopRequest shopRequest , Long userId, List<Product> products) {
+    public ShopResponse addStore(ShopRequest shopRequest, Long userId, List<Product> products) {
         try {
             User user = getUserAndCheckAuthorization(userId);
             Store store = convertToEntity(shopRequest, userId, products);
-            System.out.println("UserId:::::::::" + userId);
+
             Store savedStore = storeRepository.save(store);
-            System.out.println("UserId:::::::::1" + userId);
             ShopData shopData = convertToDto(savedStore);
-            System.out.println("UserId:::::::::2" + userId);
+
             return ShopResponse.builder()
-                    .statusCode(201)
-                    .status("success")
-                    .message("가게 정보가 추가되었습니다.")
-                    .data(shopData)
-                    .build();
+                .statusCode(201)
+                .status("success")
+                .message("가게 정보가 추가되었습니다.")
+                .data(shopData)
+                .build();
         } catch (Exception e) {
             throw new StoreException("가게 정보 추가 중 오류 발생", e);
         }
     }
+
     /**가게 정보 조회(다건)*/
     public List<ShopData> getAllShops(Long userId) {
         List<Store> stores = storeRepository.findAll();
