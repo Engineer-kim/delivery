@@ -2,7 +2,6 @@ package com.sparta.delivery.order;
 
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.order.dto.OrderResponseDto;
-import com.sparta.delivery.order.dto.OrderSearchRequestDto;
 import com.sparta.delivery.order.dto.OrderStatusUpdateDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.user.User;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +22,6 @@ import java.util.UUID;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderRepository orderRepository;
 
     // 주문 생성
     @PostMapping

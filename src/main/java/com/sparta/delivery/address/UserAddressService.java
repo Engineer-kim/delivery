@@ -106,13 +106,6 @@ public class UserAddressService {
 
 
     // 주소 line1 으로 검색
-    public List<UserAddressResponseDto> searchAddressByLine1(String searchKeyword) {
-        List<UserAddress> userAddressList = userAddressRepository.findAllByLine1ContainingIgnoreCase(searchKeyword);
-        return userAddressList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
     public Page<UserAddressResponseDto> searchAddressByLine1(String keyword, int page, int size, String sortBy, boolean isAsc) {
 
         // 페이지 크기 제한 적용

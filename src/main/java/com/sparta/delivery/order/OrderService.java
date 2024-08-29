@@ -7,14 +7,9 @@ import com.sparta.delivery.cart.CartItem;
 import com.sparta.delivery.cart.CartItemRepository;
 import com.sparta.delivery.cart.CartRepository;
 import com.sparta.delivery.order.dto.*;
-import com.sparta.delivery.order.orderitem.OrderItemRepository;
-import com.sparta.delivery.product.Product;
-import com.sparta.delivery.product.ProductRepository;
-import com.sparta.delivery.product.ProductService;
 import com.sparta.delivery.shop.entity.Store;
 import com.sparta.delivery.shop.repo.ShopRepository;
 import com.sparta.delivery.user.User;
-import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -199,18 +193,6 @@ public class OrderService {
         // Page<Order>를 Page<OrderResponseDto>로 변환
         return orders.map(OrderService::toOrderResponseDto);
     }
-
-
-    private OrderItem createOrderItem(Order order, CartItem cartItem) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrder(order);
-        orderItem.setProductId(cartItem.getProduct().getProductId());
-        orderItem.setProductName(cartItem.getProduct().getProductName());
-        orderItem.setPrice(cartItem.getProduct().getPrice());
-        orderItem.setQuantity(cartItem.getQuantity());
-        return orderItem;
-    }
-
 
 
     // order -> dto 매퍼

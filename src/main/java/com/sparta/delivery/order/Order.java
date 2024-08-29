@@ -48,22 +48,9 @@ public class Order extends TimeStamped {
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-
-    // 주문 총 금액 계산
-    public Integer calculateTotalAmount() {
-        return orderItems.stream()
-                .mapToInt(item -> item.getPrice() * item.getQuantity())
-                .sum();
-    }
-
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
-    }
-
-    public void removeOrderItem(OrderItem orderItem) {
-        orderItems.remove(orderItem);
-        orderItem.setOrder(null);
     }
 
     // 외래키
