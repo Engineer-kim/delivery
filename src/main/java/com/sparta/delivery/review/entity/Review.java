@@ -3,6 +3,7 @@ package com.sparta.delivery.review.entity;
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.common.statusEnum.DataStatus;
 import com.sparta.delivery.common.statusEnum.PrivacyStatus;
+import com.sparta.delivery.order.Order;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -55,6 +56,11 @@ public class Review extends TimeStamped {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
 
     @PrePersist
     private void setDefaultStatus() {

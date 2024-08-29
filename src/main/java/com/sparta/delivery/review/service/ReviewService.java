@@ -2,6 +2,8 @@ package com.sparta.delivery.review.service;
 
 import com.sparta.delivery.common.statusEnum.DataStatus;
 import com.sparta.delivery.common.statusEnum.PrivacyStatus;
+import com.sparta.delivery.order.Order;
+import com.sparta.delivery.order.OrderRepository;
 import com.sparta.delivery.review.dto.ReviewRequest;
 import com.sparta.delivery.review.dto.ReviewResponse;
 import com.sparta.delivery.review.entity.Review;
@@ -27,15 +29,20 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
 
     public void addReview(Long userId, ReviewRequest reviewRequest) {
         User user = getUserAndCheckAuthorization(userId);
+
+        Order order = orderRepository.findById(reviewRequest.getOrderId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 오더를 찾을 수 없습니다."));
         Review review = Review.builder()
                 .reviewTitle(reviewRequest.getReviewTitle())
                 .reviewRating(BigDecimal.valueOf(reviewRequest.getReviewRating()))
                 .reviewContent(reviewRequest.getReviewContent())
                 .userId(userId)
+                .order(order)
                 .build();
         reviewRepository.save(review);
     }

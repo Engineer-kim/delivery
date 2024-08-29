@@ -3,6 +3,8 @@ package com.sparta.delivery.review.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @ToString
@@ -10,6 +12,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewRequest {
+    @JsonProperty("order_id")
+    private UUID orderId;
     @JsonProperty("review_title")
     private String reviewTitle;
     @JsonProperty("review_rating")
