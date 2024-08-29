@@ -2,11 +2,13 @@ package com.sparta.delivery.order;
 
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.order.dto.OrderResponseDto;
+import com.sparta.delivery.order.dto.OrderSearchRequestDto;
 import com.sparta.delivery.order.dto.OrderStatusUpdateDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -60,6 +62,18 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
+    // 상점 Status 로 주문 검색
+    @GetMapping("/search")
+    public ResponseEntity<Page<OrderResponseDto>> getOrdersByStatus(
+            @RequestParam OrderStatusEnum status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort) {
+
+        Page<OrderResponseDto> orders = orderService.getOrdersByStatus(status, page, size, sort);
+
+        return ResponseEntity.ok(orders);
+    }
 
 
     // 주문 상태 수정 (가게 주인)

@@ -4,10 +4,7 @@ import com.sparta.delivery.cart.Cart;
 import com.sparta.delivery.cart.CartItem;
 import com.sparta.delivery.cart.CartItemRepository;
 import com.sparta.delivery.cart.CartRepository;
-import com.sparta.delivery.order.dto.OrderItemDto;
-import com.sparta.delivery.order.dto.OrderRequestDto;
-import com.sparta.delivery.order.dto.OrderResponseDto;
-import com.sparta.delivery.order.dto.OrderStatusUpdateDto;
+import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.orderitem.OrderItemRepository;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.product.ProductRepository;
@@ -17,6 +14,10 @@ import com.sparta.delivery.shop.repo.ShopRepository;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -165,6 +166,26 @@ public class OrderService {
         return toOrderResponseDto(order);
     }
 
+    // 상점 Status 로 주문 검색
+    public Page<OrderResponseDto> getOrdersByStatus(OrderStatusEnum status, int page, int size, String sort) {
+        // 페이지 크기 기본값
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+
+        // 정렬 방식 기본값
+        Sort sortOrder = Sort.by(Sort.Direction.ASC, "createdAt"); // 기본값: 생성일 순
+        if ("modifiedAt".equalsIgnoreCase(sort)) {
+            sortOrder = Sort.by(Sort.Direction.ASC, "modifiedAt"); // 수정일 순
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        Page<Order> orders = orderRepository.findByStatus(status, pageable);
+
+        // Page<Order>를 Page<OrderResponseDto>로 변환
+        return orders.map(OrderService::toOrderResponseDto);
+    }
+
 
     private OrderItem createOrderItem(Order order, CartItem cartItem) {
         OrderItem orderItem = new OrderItem();
@@ -177,26 +198,29 @@ public class OrderService {
     }
 
 
+
     // order -> dto 매퍼
     public static OrderResponseDto toOrderResponseDto(Order order) {
-        OrderResponseDto dto = new OrderResponseDto();
-        dto.setOrderId(order.getId());
-        dto.setShopId(order.getStore().getShopId());
-        dto.setShopName(order.getStore().getShopName());
-        dto.setUserId(order.getUser().getId()); // userId는 User 엔티티에서 가져옵니다
-        dto.setTypeEnum(order.getType());
-        dto.setStatusEnum(order.getStatus());
-        dto.setRequest(order.getRequest());
-        dto.setTotalAmount(order.getTotalAmount());
-        List<OrderItemDto> orderItemDtos = order.getOrderItems().stream()
-                .map(item -> new OrderItemDto(
-                        item.getProductId(),
-                        item.getProductName(),
-                        item.getQuantity(),
-                        item.getPrice()))
-                .collect(Collectors.toList());
+        Store store = order.getStore(); // 상점 정보 가져오기
+        OrderResponseDto dto = OrderResponseDto.builder()
+                .orderId(order.getId())
+                .userId(order.getUser().getId()) // userId는 User 엔티티에서 가져옵니다
+                .shopId(store.getShopId()) // 상점 ID
+                .shopName(store.getShopName()) // 상점 이름 추가
+                .typeEnum(order.getType())
+                .statusEnum(order.getStatus())
+                .request(order.getRequest())
+                .totalAmount(order.getTotalAmount())
+                .createdAt(order.getCreatedAt()) // 주문 일자 추가
+                .orderItems(order.getOrderItems().stream()
+                        .map(item -> new OrderItemDto(
+                                item.getProductId(),
+                                item.getProductName(),
+                                item.getQuantity(),
+                                item.getPrice()))
+                        .collect(Collectors.toList()))
+                .build();
 
-        dto.setOrderItems(orderItemDtos);
         return dto;
     }
 
