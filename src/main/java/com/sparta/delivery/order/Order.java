@@ -1,5 +1,6 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.address.UserAddress;
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.shop.entity.Store;
@@ -79,5 +80,9 @@ public class Order extends TimeStamped {
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")  // 단방향 연관관계 설정
+    private UserAddress address;
 
 }

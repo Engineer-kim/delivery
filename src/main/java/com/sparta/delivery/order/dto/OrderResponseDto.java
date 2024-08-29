@@ -24,4 +24,6 @@ public class OrderResponseDto {
     private List<OrderItemDto> orderItems;
     private String request;
     private Integer totalAmount;
+    private String addressLine1;
+    private String addressLine2;
 }

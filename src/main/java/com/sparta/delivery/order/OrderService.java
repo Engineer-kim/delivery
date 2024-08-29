@@ -1,5 +1,7 @@
 package com.sparta.delivery.order;
 
+import com.sparta.delivery.address.UserAddress;
+import com.sparta.delivery.address.UserAddressRepository;
 import com.sparta.delivery.cart.Cart;
 import com.sparta.delivery.cart.CartItem;
 import com.sparta.delivery.cart.CartItemRepository;
@@ -33,6 +35,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ShopRepository shopRepository;
+    private final UserAddressRepository userAddressRepository;
 
 
     // 주문 생성
@@ -42,14 +45,15 @@ public class OrderService {
         Store store = shopRepository.findById(requestDto.getShopId())
                 .orElseThrow(() -> new IllegalArgumentException("상점을 찾을 수 없습니다."));
 
-
+        UserAddress address = userAddressRepository.findById(requestDto.getAddressId())
+                .orElseThrow(() -> new IllegalArgumentException("주소를 찾을 수 없습니다."));
         Order order = new Order();
         order.setStatus(OrderStatusEnum.PENDING);
         order.setUser(user);
         order.setStore(store);
         order.setType(requestDto.getTypeEnum());
         order.setRequest(requestDto.getRequest());
-
+        order.setAddress(address);
         Order savedOrder = orderRepository.save(order);
         return savedOrder.getId();
     }
@@ -222,6 +226,8 @@ public class OrderService {
                 .request(order.getRequest())
                 .totalAmount(order.getTotalAmount())
                 .createdAt(order.getCreatedAt()) // 주문 일자 추가
+                .addressLine1(order.getAddress().getLine1()) // 주소 Line1 추가
+                .addressLine2(order.getAddress().getLine2()) // 주소 Line2 추가
                 .orderItems(order.getOrderItems().stream()
                         .map(item -> new OrderItemDto(
                                 item.getProductId(),
