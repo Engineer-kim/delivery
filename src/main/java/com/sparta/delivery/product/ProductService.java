@@ -5,6 +5,8 @@ import com.sparta.delivery.product.dto.PageDto;
 import com.sparta.delivery.product.dto.ProductAddRequestDto;
 import com.sparta.delivery.product.dto.ProductAddResponseDto;
 import com.sparta.delivery.product.dto.ProductSingleResponse;
+import com.sparta.delivery.shop.entity.Store;
+import com.sparta.delivery.shop.repo.ShopRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,20 +24,58 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ShopRepository shopRepository;
 
     public ProductAddResponseDto addProduct(ProductAddRequestDto productRequestDto) {
-        Product product = Product.builder()
-            .productName(productRequestDto.productName())
-            .description(productRequestDto.description())
-            .price(productRequestDto.price())
-            .build();
+        Product product;
+        Store store;
 
-        productRepository.save(product);
+        if(productRequestDto.shopId() == null) {
+            product = Product.builder()
+                .productName(productRequestDto.productName())
+                .description(productRequestDto.description())
+                .price(productRequestDto.price())
+                .build();
 
-        return new ProductAddResponseDto(product);
+            productRepository.save(product);
+
+            return ProductAddResponseDto.builder()
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .createdAt(product.getCreatedAt())
+                .createdBy(product.getCreatedBy())
+                .build();
+        }
+        else {
+            store = shopRepository.findById(UUID.fromString(productRequestDto.shopId())).orElseThrow(() -> new RuntimeException("가게 정보를 찾을 수 없습니다."));
+
+            product = Product.builder()
+                .store(store)
+                .productName(productRequestDto.productName())
+                .description(productRequestDto.description())
+                .price(productRequestDto.price())
+                .build();
+
+            productRepository.save(product);
+
+            return ProductAddResponseDto.builder()
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .createdAt(product.getCreatedAt())
+                .createdBy(product.getCreatedBy())
+                .storeId(store.getShopId())
+                .build();
+        }
+
+
+
     }
 
-    public PageDto getAllProducts(Pageable pageable) {
+    public PageDto getAllSearch(Pageable pageable) {
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
             Sort.by("productName").descending());
         Page<Product> products = productRepository.findAll(sortedPageable);
@@ -85,7 +125,7 @@ public class ProductService {
         }
     }
 
-    public PageDto getAllProducts(Pageable pageable, String search) {
+    public PageDto getAllSearch(Pageable pageable, String search) {
         Page<Product> productPage;
 
         if (search != null && !search.isEmpty()) {

@@ -41,7 +41,7 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<PageDto> getAllProducts(Pageable pageable) {
-        PageDto products = productService.getAllProducts(pageable);
+        PageDto products = productService.getAllSearch(pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -75,7 +75,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('MASTER')")
     @GetMapping("/search")
-    public ResponseEntity<PageDto> getAllProducts(
+    public ResponseEntity<PageDto> getAllProductsSearch (
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
         @RequestParam(value = "sort", defaultValue = "createdDate,desc") String sort,
@@ -90,7 +90,7 @@ public class ProductController {
         Sort sortBy = Sort.by(direction, sortParams[0]);
 
         Pageable pageable = PageRequest.of(page, size, sortBy);
-        PageDto pageDto = productService.getAllProducts(pageable, search);
+        PageDto pageDto = productService.getAllSearch(pageable, search);
         return ResponseEntity.ok(pageDto);
     }
 

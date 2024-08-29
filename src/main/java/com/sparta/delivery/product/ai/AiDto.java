@@ -1,5 +1,5 @@
 package com.sparta.delivery.product.ai;
 
-public record AiDto(String prompt) {
+public record AiDto(String prompt, String shopId) {
 
 }
