@@ -2,6 +2,7 @@ package com.sparta.delivery.order;
 
 import com.sparta.delivery.common.TimeStamped;
 import com.sparta.delivery.review.entity.Review;
+import com.sparta.delivery.shop.entity.Store;
 import com.sparta.delivery.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -74,5 +75,9 @@ public class Order extends TimeStamped {
 
     @OneToOne(mappedBy = "order")
     private Review review;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
 }

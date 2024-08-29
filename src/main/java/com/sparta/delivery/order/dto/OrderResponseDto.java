@@ -12,6 +12,8 @@ import java.util.UUID;
 @Setter
 public class OrderResponseDto {
     private UUID orderId;
+    private UUID shopId;
+    private String shopName;
     private Long userId;
     private OrderTypeEnum typeEnum;
     private OrderStatusEnum statusEnum;
