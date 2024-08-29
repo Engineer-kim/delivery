@@ -12,6 +12,8 @@ import com.sparta.delivery.order.orderitem.OrderItemRepository;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.product.ProductRepository;
 import com.sparta.delivery.product.ProductService;
+import com.sparta.delivery.shop.entity.Store;
+import com.sparta.delivery.shop.repo.ShopRepository;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +33,21 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
+    private final ShopRepository shopRepository;
 
 
     // 주문 생성
     @Transactional
     public UUID createOrder(User user, OrderRequestDto requestDto) {
 
+        Store store = shopRepository.findById(requestDto.getShopId())
+                .orElseThrow(() -> new IllegalArgumentException("상점을 찾을 수 없습니다."));
+
+
         Order order = new Order();
         order.setStatus(OrderStatusEnum.PENDING);
         order.setUser(user);
+        order.setStore(store);
         order.setType(requestDto.getTypeEnum());
         order.setRequest(requestDto.getRequest());
 
@@ -175,6 +183,8 @@ public class OrderService {
     public static OrderResponseDto toOrderResponseDto(Order order) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setOrderId(order.getId());
+        dto.setShopId(order.getStore().getShopId());
+        dto.setShopName(order.getStore().getShopName());
         dto.setUserId(order.getUser().getId()); // userId는 User 엔티티에서 가져옵니다
         dto.setTypeEnum(order.getType());
         dto.setStatusEnum(order.getStatus());

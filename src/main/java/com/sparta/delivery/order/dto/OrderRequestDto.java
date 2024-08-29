@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Getter
 public class OrderRequestDto {
+    private UUID shopId;
     private OrderTypeEnum typeEnum;
     private String request;
 }

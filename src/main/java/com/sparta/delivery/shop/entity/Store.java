@@ -1,6 +1,7 @@
 package com.sparta.delivery.shop.entity;
 
 import com.sparta.delivery.common.TimeStamped;
+import com.sparta.delivery.order.Order;
 import com.sparta.delivery.product.Product;
 import com.sparta.delivery.common.statusEnum.DataStatus;
 import com.sparta.delivery.common.statusEnum.PrivacyStatus;
@@ -75,6 +76,11 @@ public class Store extends TimeStamped {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    // 오더와 연관 관계
+    @OneToMany(mappedBy = "store")
+    private List<Order> orders;
+
 
     @PrePersist
     private void setDefaultStatus() {
