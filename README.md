@@ -95,7 +95,7 @@
 ---
 
 ## 📜 API
-https://www.notion.so/API-90a43fd7b3d04c688949f05d22c36f9f?pvs=4
+https://pumped-judo-47a.notion.site/API-90a43fd7b3d04c688949f05d22c36f9f
 
 
 
