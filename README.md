@@ -51,7 +51,37 @@
 ---
 
 ## 🗂 서비스 구성 및 실행방법
+### 개발 환경 설정
 
+1. **Java 설치**:
+   - JDK 17을 설치합니다. [JDK 다운로드 링크](https://jdk.java.net/17)에서 다운로드하여 설치합니다.
+
+2. **Gradle 설치**:
+   - Gradle 8.1.1을 설치합니다. [Gradle 다운로드 링크](https://gradle.org/install/)에서 설치 방법을 확인합니다.
+
+3. **PostgreSQL 설치**:
+   - PostgreSQL 15.2를 설치합니다. [PostgreSQL 다운로드 링크](https://www.postgresql.org/download/)에서 설치 방법을 참조합니다.
+   - 데이터베이스와 사용자를 설정합니다. 기본 설정 예시:
+     ```bash
+     CREATE DATABASE delivery_service;
+     CREATE USER your_username WITH PASSWORD 'your_password';
+     GRANT ALL PRIVILEGES ON DATABASE delivery_service TO your_username;
+     ```
+
+4. **환경 변수 설정**:
+     - src/main/resources/application.properties 파일을 다음과 같이 설정합니다:
+    # 애플리케이션 이름
+    spring.application.name=[애플리케이션 이름]
+    
+    # 데이터베이스 설정
+    spring.datasource.url=jdbc:postgresql://localhost:5432/[데이터베이스 이름]  # 데이터베이스 URL
+    spring.datasource.username=[사용자 이름]  # 데이터베이스 사용자 이름
+    spring.datasource.password=[비밀번호]  # 데이터베이스 비밀번호
+    spring.datasource.driver-class-name=org.postgresql.Driver  # 데이터베이스 드라이버 클래스
+    
+    # AI API 설정
+    gemini.api.url=https://generativelanguage.googleapis.com
+    gemini.api.key=AIzaSyBPQ0BAy6C2LaWBe0oS7oBgjJY96YlL83Q
 
 ---
 
