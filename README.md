@@ -56,7 +56,8 @@
 ---
 
 
-## 🗂 ERD
+## 📊 ERD
+
 ![image](https://github.com/user-attachments/assets/d8af53dd-957f-47e7-927b-a5bb12f869ef)
 
 ---
