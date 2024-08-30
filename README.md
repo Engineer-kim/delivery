@@ -70,18 +70,20 @@
 
 4. **환경 변수 설정**:
      - src/main/resources/application.properties 파일을 다음과 같이 설정합니다:
-    # 애플리케이션 이름
-    spring.application.name=[애플리케이션 이름]
-    
-    # 데이터베이스 설정
-    spring.datasource.url=jdbc:postgresql://localhost:5432/[데이터베이스 이름]  # 데이터베이스 URL
-    spring.datasource.username=[사용자 이름]  # 데이터베이스 사용자 이름
-    spring.datasource.password=[비밀번호]  # 데이터베이스 비밀번호
-    spring.datasource.driver-class-name=org.postgresql.Driver  # 데이터베이스 드라이버 클래스
-    
-    # AI API 설정
-    gemini.api.url=https://generativelanguage.googleapis.com
-    gemini.api.key=AIzaSyBPQ0BAy6C2LaWBe0oS7oBgjJY96YlL83Q
+    ```properties
+     # 애플리케이션 이름
+     spring.application.name=[애플리케이션 이름]
+
+     # 데이터베이스 설정
+     spring.datasource.url=jdbc:postgresql://localhost:5432/[데이터베이스 이름]
+     spring.datasource.username=[사용자 이름]
+     spring.datasource.password=[비밀번호]
+     spring.datasource.driver-class-name=org.postgresql.Driver
+
+     # AI API 설정
+     gemini.api.url=https://generativelanguage.googleapis.com
+     gemini.api.key=[AI API 키]
+     ```
 
 ---
 
