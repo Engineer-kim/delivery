@@ -56,8 +56,15 @@
 ---
 
 
-## 🗂 ERD (엔터티 관계 다이어그램)
+## 🗂 ERD
 ![image](https://github.com/user-attachments/assets/d8af53dd-957f-47e7-927b-a5bb12f869ef)
+
+---
+
+## 📜 API
+https://www.notion.so/API-90a43fd7b3d04c688949f05d22c36f9f?pvs=4
+
+
 
 
 
