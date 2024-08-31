@@ -46,7 +46,7 @@ public class PaymentController {
     //결제승인 ( 만들어야 됨 )
     @PostMapping("/approve")
     public ResponseEntity<ApiResponse> approvePayment(@RequestParam String pgToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        PaymentAppResponseDto approvedPayment = paymentService.approvedPayment(pgToken, userDetails);
+        Map<String, Object> approvedPayment = paymentService.approvedPayment(pgToken, userDetails);
 
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(
             200,"success","결제 승인이 성공적으로 처리되었습니다.", approvedPayment

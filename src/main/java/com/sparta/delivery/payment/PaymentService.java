@@ -140,7 +140,7 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
-    public PaymentAppResponseDto approvedPayment(String pgToken, UserDetailsImpl userDetails) {
+    public Map<String, Object> approvedPayment(String pgToken, UserDetailsImpl userDetails) {
         List<Payment> payments = paymentRepository.findTopByPartnerUserIdOrderByCreatedAtDesc(
             String.valueOf(userDetails.getUser().getId()));
         Payment payment;
@@ -150,30 +150,33 @@ public class PaymentService {
             throw new RuntimeException("해당 가맹점 사용자 ID로 결제 내역을 찾을 수 없습니다.");
         }
 
-        PaymentApprovalRequestDto requestDto = PaymentApprovalRequestDto.builder()
-            .cid(payment.getCid()) // 결제 CID 값을 설정합니다.
-            .tid(payment.getTid()) // 결제 TID 값을 설정합니다.
-            .partnerOrderId(payment.getPartnerOrderId()) // 가맹점 주문 ID 값을 설정합니다.
-            .partnerUserId(payment.getPartnerUserId()) // 가맹점 사용자 ID 값을 설정합니다.
-            .pgToken(pgToken) // 결제 승인 요청을 인증하는 토큰을 설정합니다.
-            .totalAmount(payment.getTotalAmount()) // 상품 총액을 설정합니다.
-            .build();
+        // 요청 본문을 Map으로 구성
+        Map<String, Object> requestBody = new ConcurrentHashMap<>();
+        requestBody.put("cid", payment.getCid()); // 결제 CID 값을 설정합니다.
+        requestBody.put("tid", payment.getTid()); // 결제 TID 값을 설정합니다.
+        requestBody.put("partner_order_id", payment.getPartnerOrderId()); // 가맹점 주문 ID 값을 설정합니다.
+        requestBody.put("partner_user_id", payment.getPartnerUserId()); // 가맹점 사용자 ID 값을 설정합니다.
+        requestBody.put("pg_token", pgToken); // 결제 승인 요청을 인증하는 토큰을 설정합니다.
+        requestBody.put("total_amount", payment.getTotalAmount()); // 상품 총액을 설정합니다.
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION_HEADER, "SECRET_KEY " + adminKey);  // 카카오페이의 인증 헤더 설정
 
         // HTTP 요청 엔티티 구성
-        HttpEntity<PaymentApprovalRequestDto> entity = new HttpEntity<>(requestDto, headers);
+        // HTTP 요청 엔티티 구성
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<PaymentAppResponseDto> response = restTemplate.exchange(
+        ResponseEntity<Map> response = restTemplate.exchange(
             approveUrl,
             HttpMethod.POST,
             entity,
-            PaymentAppResponseDto.class
+            Map.class
         );
 
+        // 응답 본문을 반환
         return response.getBody();
     }
+
 }
 
