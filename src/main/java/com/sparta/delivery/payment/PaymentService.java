@@ -4,8 +4,6 @@ import static com.sparta.delivery.payment.PaymentEnum.CARD;
 
 import com.sparta.delivery.order.Order;
 import com.sparta.delivery.order.OrderRepository;
-import com.sparta.delivery.payment.dto.PaymentAppResponseDto;
-import com.sparta.delivery.payment.dto.PaymentApprovalRequestDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import com.sparta.delivery.user.User;
 import com.sparta.delivery.user.UserRepository;
@@ -16,8 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -114,6 +110,7 @@ public class PaymentService {
             .quantity(QUANTITY)
             .taxFreeAmount(TAX_FREE_AMOUNT)
             .isDeleted(false)
+            .order(order)
             .build();
         paymentRepository.save(payment);
 
@@ -143,6 +140,7 @@ public class PaymentService {
     public Map<String, Object> approvedPayment(String pgToken, UserDetailsImpl userDetails) {
         List<Payment> payments = paymentRepository.findTopByPartnerUserIdOrderByCreatedAtDesc(
             String.valueOf(userDetails.getUser().getId()));
+
         Payment payment;
         if (!payments.isEmpty()) {
             payment = payments.get(0); // 가장 최근 결제 내역 반환
@@ -173,6 +171,52 @@ public class PaymentService {
             entity,
             Map.class
         );
+
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody == null) {
+            throw new RuntimeException("결제 승인 응답이 비어 있습니다.");
+        }
+
+        // Map to Payment entity
+        payment.setAid((String) responseBody.get("aid"));
+        payment.setTid((String) responseBody.get("tid"));
+        payment.setCid((String) responseBody.get("cid"));
+        payment.setPartnerOrderId((String) responseBody.get("partner_order_id"));
+        payment.setPartnerUserId((String) responseBody.get("partner_user_id"));
+        payment.setItemName((String) responseBody.get("item_name"));
+        payment.setQuantity((Integer) responseBody.get("quantity"));
+        payment.setPaymentMethodType((String) responseBody.get("payment_method_type"));
+        payment.setCreatedAt(LocalDateTime.parse((String) responseBody.get("created_at")));
+        payment.setApprovedAt(LocalDateTime.parse((String) responseBody.get("approved_at")));
+
+        // Extract Amount information
+        Map<String, Object> amountMap = (Map<String, Object>) responseBody.get("amount");
+        if (amountMap != null) {
+            Payment.Amount amount = new Payment.Amount();
+            amount.setTotal((Integer) amountMap.get("total"));
+            amount.setTaxFree((Integer) amountMap.get("tax_free"));
+            amount.setVat((Integer) amountMap.get("vat"));
+            amount.setPoint((Integer) amountMap.get("point"));
+            amount.setDiscount((Integer) amountMap.get("discount"));
+            amount.setGreenDeposit((Integer) amountMap.get("green_deposit"));
+            payment.setAmount(amount);
+        }
+
+        // Extract CardInfo information if available
+        Map<String, Object> cardInfoMap = (Map<String, Object>) responseBody.get("card_info");
+        if (cardInfoMap != null) {
+            Payment.CardInfo cardInfo = new Payment.CardInfo();
+            cardInfo.setKakaopayPurchaseCorp((String) cardInfoMap.get("kakaopay_purchase_corp"));
+            cardInfo.setKakaopayPurchaseCorpCode(
+                (String) cardInfoMap.get("kakaopay_purchase_corp_code"));
+            cardInfo.setKakaopayIssuerCorp((String) cardInfoMap.get("kakaopay_issuer_corp"));
+            cardInfo.setKakaopayIssuerCorpCode(
+                (String) cardInfoMap.get("kakaopay_issuer_corp_code"));
+            cardInfo.setCardType((String) cardInfoMap.get("card_type"));
+            payment.setCardInfo(cardInfo);
+        }
+
+        paymentRepository.save(payment);
 
         // 응답 본문을 반환
         return response.getBody();

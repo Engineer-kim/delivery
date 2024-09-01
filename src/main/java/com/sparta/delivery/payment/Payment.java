@@ -84,8 +84,13 @@ public class Payment {
     @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    // Getters and Setters
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order;
 
+    // Getters and Setters
+    @Getter
+    @Setter
     // Embedded classes for Amount and CardInfo
     @Embeddable
     public static class Amount {
@@ -107,22 +112,11 @@ public class Payment {
 
         @Column(name = "green_deposit")
         private int greenDeposit;
-//        @Column
-//        private LocalDateTime deletedAt;
-//
-//        @Column
-//        private String deletedBy;
-//
-//        // 삭제 여부
-//        @Column(name = "is_deleted")
-//        private boolean isDeleted = false;
-
-        @OneToOne
-        @JoinColumn(name = "order_id", referencedColumnName = "id")
-        private Order order;
 
     }
 
+    @Getter
+    @Setter
     @Embeddable
     public static class CardInfo {
 
