@@ -111,6 +111,7 @@ public class PaymentService {
             .taxFreeAmount(TAX_FREE_AMOUNT)
             .isDeleted(false)
             .order(order)
+            .user(user)
             .build();
         paymentRepository.save(payment);
 
@@ -138,8 +139,8 @@ public class PaymentService {
     }
 
     public Map<String, Object> approvedPayment(String pgToken, UserDetailsImpl userDetails) {
-        List<Payment> payments = paymentRepository.findTopByPartnerUserIdOrderByCreatedAtDesc(
-            String.valueOf(userDetails.getUser().getId()));
+        List<Payment> payments = paymentRepository.findTopByUserIdOrderByCreatedAtDesc(
+            userDetails.getUser().getId());
 
         Payment payment;
         if (!payments.isEmpty()) {

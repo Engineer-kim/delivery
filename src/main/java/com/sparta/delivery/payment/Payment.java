@@ -2,6 +2,7 @@ package com.sparta.delivery.payment;
 
 
 import com.sparta.delivery.order.Order;
+import com.sparta.delivery.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -87,6 +89,10 @@ public class Payment {
     @OneToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // Getters and Setters
     @Getter
