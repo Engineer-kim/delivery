@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -110,8 +112,8 @@ public class PaymentService {
             .quantity(QUANTITY)
             .taxFreeAmount(TAX_FREE_AMOUNT)
             .isDeleted(false)
-            .order(order)
-            .user(user)
+            .orderId(order.getId())
+            .userId(user.getId())
             .build();
         paymentRepository.save(payment);
 
@@ -120,14 +122,15 @@ public class PaymentService {
 
     // 결제 ID로 조회 메소드
     public Payment getPaymentById(UUID paymentId) {
-        return paymentRepository.findById(String.valueOf(paymentId))
+        return paymentRepository.findById(paymentId)
             .orElseThrow(() -> new RuntimeException("결제를 찾을 수 없습니다."));
     }
 
-    // 특정 사용자에 대한 결제 내역 조회 (페이징 포함)
-//    public Page<Payment> getPaymentsByUserId(UUID userId, Pageable pageable) {
-//        return paymentRepository.findByUserId(userId, pageable);
-//    }
+     //전체 결제 내역 조회
+    public Page<Payment> getPaymentsAll(Pageable pageable) {
+
+        return paymentRepository.findAll(pageable);
+    }
 
     // 결제 삭제 (논리 삭제)
     public void deletePayment(UUID paymentId) {
@@ -222,6 +225,8 @@ public class PaymentService {
         // 응답 본문을 반환
         return response.getBody();
     }
+
+
 
 }
 

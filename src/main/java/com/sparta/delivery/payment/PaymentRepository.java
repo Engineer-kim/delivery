@@ -1,7 +1,13 @@
 package com.sparta.delivery.payment;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface PaymentRepository extends JpaRepository<Payment, String> {
 
@@ -9,6 +15,8 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     List<Payment> findTopByUserIdOrderByCreatedAtDesc(Long user_id);
 
     // 특정 사용자에 대한 결제 내역을 페이징된 결과로 반환합니다.
-    //Page<Payment> findByUserId(UUID userId, Pageable pageable);
+    Page<Payment> findAll(Pageable pageable);
+
+    Optional<Payment> findById(UUID id);
 }
 

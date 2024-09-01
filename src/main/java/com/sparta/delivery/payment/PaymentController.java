@@ -43,7 +43,8 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(
             201, "success", "결제 요청이 성공적으로 처리되었습니다.", createdPayment));
     }
-    //결제승인 ( 만들어야 됨 )
+
+    //결제승인
     @PostMapping("/approve")
     public ResponseEntity<ApiResponse> approvePayment(@RequestParam String pgToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Map<String, Object> approvedPayment = paymentService.approvedPayment(pgToken, userDetails);
@@ -53,32 +54,34 @@ public class PaymentController {
         ));
     }
 
-
-    //id로 결제 정보 조회
+    //payment id로 결제 정보 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getPaymentById(@PathVariable UUID id) {
+    public ResponseEntity<Payment> getPaymentByPaymentId(@PathVariable UUID id) {
         Payment payment = paymentService.getPaymentById(id);
-        return ResponseEntity.ok(new ApiResponse(
-            200, "success", "결제 정보 조회 성공", payment));
+
+        return ResponseEntity.ok(payment);
     }
 
     //결제 page 반환(list)
-//    @GetMapping
-//    public ResponseEntity<ApiResponse> getPaymentsByUserId(@RequestParam UUID userId,
-//        @RequestParam int page,
-//        @RequestParam int size,
-//        @RequestParam(required = false) String sortBy) {
-//        Pageable pageable = PageRequest.of(page, size,
-//            sortBy == null ? Sort.by("createdAt").descending() : Sort.by(sortBy));
-//        Page<Payment> paymentPage = paymentService.getPaymentsByUserId(userId, pageable);
-//        return ResponseEntity.ok(new ApiResponse(
-//            200, "success", "사용자 결제 내역 조회 성공", paymentPage));
-//    }
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> getAllPayments(
+        @RequestParam int page,
+        @RequestParam int size,
+        @RequestParam(required = false) String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size,
+            sortBy == null ? Sort.by("createdAt").descending() : Sort.by(sortBy));
+
+        Page<Payment> paymentPage = paymentService.getPaymentsAll(pageable);
+        return ResponseEntity.ok(new ApiResponse(
+            200, "success", "사용자 결제 내역 조회 성공", paymentPage));
+    }
 
     //결제 내역 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deletePayment(@PathVariable UUID id) {
         paymentService.deletePayment(id);
+
         return ResponseEntity.ok(new ApiResponse(
             200, "success", "결제가 성공적으로 삭제되었습니다.", null));
     }
