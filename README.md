@@ -83,7 +83,8 @@
      # AI API 설정
      gemini.api.url=https://generativelanguage.googleapis.com
      gemini.api.key=[AI API 키]
-    # 카카오페이 설정
+    
+     # 카카오페이 설정
      kakao-url.request=https://open-api.kakaopay.com/online/v1/payment/ready
      kakao-url.approve=https://open-api.kakaopay.com/online/v1/payment/approve
      kakaopay.admin-key=DEV91A7A94A1525F25D0655DAE4081A55F5B172D
