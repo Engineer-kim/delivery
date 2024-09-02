@@ -44,10 +44,10 @@
 - **장숭혁**
   - 결제 및 상품 관리 기능 : 결제 시스템 통합, 상품 추가/수정/삭제 기능 구현.
   - AI API로 상품 설명 자동 생성 기능 : AI를 활용하여 상품 설명을 자동으로 생성하는 기능 구현.
+  - 프로젝트 배포.
 
 - **김한진**
   - 가게 및 리뷰 관리 기능 개발: 가게 정보 관리, 사용자 리뷰 작성 및 관리 기능 구현.
-  - 
 ---
 
 ## 🗂 서비스 구성 및 실행방법
@@ -87,7 +87,7 @@
      # 카카오페이 설정
      kakao-url.request=https://open-api.kakaopay.com/online/v1/payment/ready
      kakao-url.approve=https://open-api.kakaopay.com/online/v1/payment/approve
-     kakaopay.admin-key=DEV91A7A94A1525F25D0655DAE4081A55F5B172D
+     kakaopay.admin-key=[your_kakaopay_admin_key]
      kakaopay.cid=TC0ONETIME
      kakaopay.approval-url=https://localhost:8080
      kakaopay.fail-url=https://localhost:8080
