@@ -46,8 +46,9 @@ public class GeminiService {
 
     private void saveRequestResponse(String request, String response, String shopId) {
         Ai aiRequestResponse = new Ai();
-        if(shopId != null){
-            Store shop = shopRepository.findById(UUID.fromString(shopId)).orElseThrow(() -> new RuntimeException("가게 id를 찾을 수 없습니다.") );
+        if (shopId != null) {
+            Store shop = shopRepository.findById(UUID.fromString(shopId))
+                .orElseThrow(() -> new RuntimeException("가게 id를 찾을 수 없습니다."));
             aiRequestResponse.setStore(shop);
         }
 
@@ -63,8 +64,7 @@ public class GeminiService {
         Optional<Ai> ai = aiRepository.findById(UUID.fromString(id));
         if (ai.isPresent()) {
             ai.get().setDeleted(true);
-        }
-        else {
+        } else {
             throw new RuntimeException("ai id를 찾을 수 없습니다.");
         }
     }
@@ -74,7 +74,7 @@ public class GeminiService {
     public void deleteWhereShopIdIsNull() {
         List<Ai> aiList = aiRepository.findByStoreIsNull();
 
-        for(Ai ai : aiList) {
+        for (Ai ai : aiList) {
             ai.setDeleted(true);
         }
     }
@@ -83,7 +83,8 @@ public class GeminiService {
     public PageDto findByShopId(String shopId, Pageable pageable) {
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
             Sort.by("createdAt").descending());
-        Page<Ai> aiPage = aiRepository.findAllByStoreShopId(UUID.fromString(shopId), sortedPageable);
+        Page<Ai> aiPage = aiRepository.findAllByStoreShopId(UUID.fromString(shopId),
+            sortedPageable);
 
         var data = aiPage.getContent().stream()
             .map(AiResponseDto::new)

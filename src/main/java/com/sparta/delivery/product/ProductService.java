@@ -30,7 +30,7 @@ public class ProductService {
         Product product;
         Store store;
 
-        if(productRequestDto.shopId() == null) {
+        if (productRequestDto.shopId() == null) {
             product = Product.builder()
                 .productName(productRequestDto.productName())
                 .description(productRequestDto.description())
@@ -47,9 +47,9 @@ public class ProductService {
                 .createdAt(product.getCreatedAt())
                 .createdBy(product.getCreatedBy())
                 .build();
-        }
-        else {
-            store = shopRepository.findById(UUID.fromString(productRequestDto.shopId())).orElseThrow(() -> new RuntimeException("가게 정보를 찾을 수 없습니다."));
+        } else {
+            store = shopRepository.findById(UUID.fromString(productRequestDto.shopId()))
+                .orElseThrow(() -> new RuntimeException("가게 정보를 찾을 수 없습니다."));
 
             product = Product.builder()
                 .store(store)
@@ -70,7 +70,6 @@ public class ProductService {
                 .storeId(store.getShopId())
                 .build();
         }
-
 
 
     }
