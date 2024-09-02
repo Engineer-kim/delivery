@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class PaymentController {
     private final OrderRepository orderRepository;
 
     //결제 요청
+    @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('MASTER')")
     @PostMapping
     public ResponseEntity<ApiResponse> createPayment(@RequestParam UUID orderId,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -44,6 +46,7 @@ public class PaymentController {
     }
 
     //결제승인
+    @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('MASTER')")
     @PostMapping("/approve")
     public ResponseEntity<ApiResponse> approvePayment(@RequestParam String pgToken,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -56,6 +59,7 @@ public class PaymentController {
 
     //payment id로 결제 정보 조회
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MASTER')")
     public ResponseEntity<Payment> getPaymentByPaymentId(@PathVariable UUID id) {
         Payment payment = paymentService.getPaymentById(id);
 
@@ -63,6 +67,7 @@ public class PaymentController {
     }
 
     //payment user id로 결제 정보 조회
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MASTER')")
     @GetMapping("/users/{userId}")
     public Page<Payment> getPaymentSearchByUserId(
         @PathVariable Long userId,
@@ -79,6 +84,7 @@ public class PaymentController {
     }
 
     //결제 page 반환(list)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MASTER')")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse> getAllPayments(
         @RequestParam int page,
@@ -94,6 +100,7 @@ public class PaymentController {
     }
 
     //결제 내역 삭제
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MASTER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deletePayment(@PathVariable UUID id) {
         paymentService.deletePayment(id);
