@@ -1,7 +1,5 @@
 package com.sparta.delivery.product.dto;
 
-import com.sparta.delivery.product.Product;
-import com.sparta.delivery.shop.entity.Store;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -14,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ProductAddResponseDto {
+
     private UUID productId;
     private String productName;
     private String description;

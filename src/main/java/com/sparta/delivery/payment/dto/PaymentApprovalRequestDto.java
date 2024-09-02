@@ -11,4 +11,5 @@ public record PaymentApprovalRequestDto(
     String pgToken, // 결제승인 요청을 인증하는 토큰
     Integer totalAmount
 ) {
+
 }

@@ -73,7 +73,7 @@ public class PaymentController {
         Pageable pageable = PageRequest.of(page, size,
             sortBy == null ? Sort.by("createdAt").descending() : Sort.by(sortBy));
 
-        Page<Payment> payment = paymentService.getPaymentAllSearchByUserId(userId,pageable);
+        Page<Payment> payment = paymentService.getPaymentAllSearchByUserId(userId, pageable);
 
         return payment;
     }

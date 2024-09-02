@@ -75,7 +75,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('MASTER')")
     @GetMapping("/search")
-    public ResponseEntity<PageDto> getAllProductsSearch (
+    public ResponseEntity<PageDto> getAllProductsSearch(
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
         @RequestParam(value = "sort", defaultValue = "createdDate,desc") String sort,

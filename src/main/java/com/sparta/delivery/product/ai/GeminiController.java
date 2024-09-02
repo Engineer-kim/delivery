@@ -1,9 +1,7 @@
 package com.sparta.delivery.product.ai;
 
 import com.sparta.delivery.product.dto.PageDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,7 +25,8 @@ public class GeminiController {
     @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('MASTER')")
     @PostMapping("/generate-description")
     public ResponseEntity<String> generateProductDescription(@RequestBody AiDto aiDto) {
-        String description = geminiService.generateProductDescription(aiDto.prompt(), aiDto.shopId());
+        String description = geminiService.generateProductDescription(aiDto.prompt(),
+            aiDto.shopId());
         return ResponseEntity.status(HttpStatus.CREATED).body(description);
     }
 
@@ -55,7 +54,7 @@ public class GeminiController {
         }
         pageable = PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
 
-        PageDto aiList = geminiService.findByShopId(shopId,pageable);
+        PageDto aiList = geminiService.findByShopId(shopId, pageable);
         return ResponseEntity.ok(aiList);
     }
 

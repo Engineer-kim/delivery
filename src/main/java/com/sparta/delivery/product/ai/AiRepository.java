@@ -1,6 +1,5 @@
 package com.sparta.delivery.product.ai;
 
-import com.sparta.delivery.shop.entity.Store;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

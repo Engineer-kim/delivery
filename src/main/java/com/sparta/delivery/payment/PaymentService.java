@@ -126,7 +126,7 @@ public class PaymentService {
             .orElseThrow(() -> new RuntimeException("결제를 찾을 수 없습니다."));
     }
 
-     //전체 결제 내역 조회
+    //전체 결제 내역 조회
     public Page<Payment> getPaymentsAll(Pageable pageable) {
 
         return paymentRepository.findAll(pageable);

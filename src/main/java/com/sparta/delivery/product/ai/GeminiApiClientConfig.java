@@ -25,10 +25,13 @@ public class GeminiApiClientConfig {
     }
 
     public String generateContent(String prompt) {
-        String url = String.format("%s/v1beta/models/gemini-1.5-flash-latest:generateContent?key=%s", geminiApiUrl, geminiApiKey);
+        String url = String.format(
+            "%s/v1beta/models/gemini-1.5-flash-latest:generateContent?key=%s", geminiApiUrl,
+            geminiApiKey);
 
         // JSON 요청 본문 구성
-        String requestBody = String.format("{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}", prompt);
+        String requestBody = String.format("{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
+            prompt);
 
         // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
@@ -38,7 +41,8 @@ public class GeminiApiClientConfig {
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
         // RestTemplate을 사용하여 POST 요청 보내기
-        ResponseEntity<String> responseEntity = restTemplate().exchange(url, HttpMethod.POST, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate().exchange(url, HttpMethod.POST,
+            requestEntity, String.class);
 
         // 응답 상태 확인 및 본문 반환
         if (responseEntity.getStatusCode() == HttpStatus.OK) {

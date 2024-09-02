@@ -30,7 +30,9 @@ public record PaymentAppResponseDto(
         int point,
         int discount,
         int greenDeposit
-    ) {}
+    ) {
+
+    }
 
     public record CardInfo(
         String kakaopayPurchaseCorp,
@@ -45,6 +47,8 @@ public record PaymentAppResponseDto(
         String interestFreeInstall,
         String cardItemCode,
         String installmentType
-    ) {}
+    ) {
+
+    }
 }
 
