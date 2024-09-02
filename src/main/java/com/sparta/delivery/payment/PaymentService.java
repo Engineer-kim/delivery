@@ -227,6 +227,8 @@ public class PaymentService {
     }
 
 
-
+    public Page<Payment> getPaymentAllSearchByUserId(Long userId, Pageable pageable) {
+        return paymentRepository.findAllByUserId(userId, pageable);
+    }
 }
 

@@ -3,7 +3,6 @@ package com.sparta.delivery.payment;
 import com.sparta.delivery.common.ApiResponse;
 import com.sparta.delivery.order.Order;
 import com.sparta.delivery.order.OrderRepository;
-import com.sparta.delivery.payment.dto.PaymentAppResponseDto;
 import com.sparta.delivery.security.UserDetailsImpl;
 import java.util.Map;
 import java.util.UUID;
@@ -46,11 +45,12 @@ public class PaymentController {
 
     //결제승인
     @PostMapping("/approve")
-    public ResponseEntity<ApiResponse> approvePayment(@RequestParam String pgToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse> approvePayment(@RequestParam String pgToken,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Map<String, Object> approvedPayment = paymentService.approvedPayment(pgToken, userDetails);
 
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(
-            200,"success","결제 승인이 성공적으로 처리되었습니다.", approvedPayment
+            200, "success", "결제 승인이 성공적으로 처리되었습니다.", approvedPayment
         ));
     }
 
@@ -60,6 +60,22 @@ public class PaymentController {
         Payment payment = paymentService.getPaymentById(id);
 
         return ResponseEntity.ok(payment);
+    }
+
+    //payment user id로 결제 정보 조회
+    @GetMapping("/users/{userId}")
+    public Page<Payment> getPaymentSearchByUserId(
+        @PathVariable Long userId,
+        @RequestParam int page,
+        @RequestParam int size,
+        @RequestParam(required = false) String sortBy
+    ) {
+        Pageable pageable = PageRequest.of(page, size,
+            sortBy == null ? Sort.by("createdAt").descending() : Sort.by(sortBy));
+
+        Page<Payment> payment = paymentService.getPaymentAllSearchByUserId(userId,pageable);
+
+        return payment;
     }
 
     //결제 page 반환(list)

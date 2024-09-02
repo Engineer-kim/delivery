@@ -18,5 +18,9 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     Page<Payment> findAll(Pageable pageable);
 
     Optional<Payment> findById(UUID id);
+
+    // 특정 사용자에 대한 결제 내역을 페이징된 결과로 반환합니다.
+    Page<Payment> findAllByUserId(Long userId, Pageable pageable);
+
 }
 
